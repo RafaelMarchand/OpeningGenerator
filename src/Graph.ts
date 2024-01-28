@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react"
-import Graphology from "graphology"
-import Generator from "./Generator"
+import { RefObject } from "react"
 import GraphDrawer from "../node_modules/graph-drawer/src/main.js"
+import Graphology from "graphology"
 
 interface GraphMethods {
   getNodeKeys: (graph: Graphology) => string[]
@@ -42,33 +41,31 @@ const GRAPH_METHODS: GraphMethods = {
   }
 }
 
-interface Props {
-  generator: Generator
-}
+export default class Graph {
+  config: any
+  graphDrawer: any
+  graph: Graphology
 
-function Graph({ generator }: Props) {
-  const container = useRef<HTMLDivElement>(null)
-
-  function nodeOnClick(key: string) {
-    generator.nodeOnClick(key)
+  constructor(ref: RefObject<HTMLDivElement>) {
+    this.graph = new Graphology()
+    this.graphDrawer = new GraphDrawer(
+      GRAPH_METHODS,
+      ref.current,
+      GRAPH_DRAWR_OPTIONS,
+      this.nodeOnClick,
+      this.nodeOnHover
+    )
   }
 
-  function nodeOnHover(key: string) {
+  draw(graph: Graphology, rootNodes: [String]) {
+    this.graphDrawer.drawGraph(graph, rootNodes)
+  }
+
+  nodeOnClick(key: string) {
+    //generator.nodeOnClick(key)
+  }
+
+  nodeOnHover(key: string) {
     //generator.hoverOnNode(key)
   }
-
-  useEffect(() => {
-    if (container && container.current) {
-      generator.graphDrawer = new GraphDrawer(
-        GRAPH_METHODS,
-        container.current,
-        GRAPH_DRAWR_OPTIONS,
-        nodeOnClick,
-        nodeOnHover
-      )
-    }
-  }, [container])
-
-  return <div ref={container} />
 }
-export default Graph

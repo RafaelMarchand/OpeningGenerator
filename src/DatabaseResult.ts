@@ -29,6 +29,7 @@ export default class DatabaseResult {
   constructor(movesDatabase: MovesDatabase) {
     this.movesDatabase = movesDatabase
     this.gameCount = this.movesDatabase.black + this.movesDatabase.white + this.movesDatabase.draws
+    //console.log(movesDatabase)
   }
 
   mostFrequentMoves(minFrequency: number): Move[] {
@@ -39,10 +40,11 @@ export default class DatabaseResult {
         moves.push(move)
       }
     })
+    //console.log(moves.length)
     return moves
   }
 
-  bestMove(color: Color): Move {
+  bestMoveByWinningPercentage(color: Color): Move {
     let bestMove: Move = this.movesDatabase.moves[0]
     let winCount = 0
     this.movesDatabase.moves.forEach((move) => {

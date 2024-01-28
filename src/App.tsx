@@ -1,42 +1,30 @@
 import { useEffect, useReducer, useRef, useState } from "react"
 
+import openingGenerator from "./utilities"
 import Generator from "./Generator"
-import Graph from "./Graph"
 import Stack from "@mui/joy/Stack"
 
-import Chessground from "@react-chess/chessground"
+import Mediator from "./Mediator"
+import "../node_modules/chessground/assets/chessground.base.css"
+import "../node_modules/chessground/assets/chessground.brown.css"
+import "../node_modules/chessground/assets/chessground.cburnett.css"
 
-// these styles must be imported somewhere
-import "chessground/assets/chessground.base.css"
-import "chessground/assets/chessground.brown.css"
-import "chessground/assets/chessground.cburnett.css"
-
-const STARTING_POSITION = "rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"
-
-const INITIAL_STATE = {
-  config: {
-    fen: STARTING_POSITION
-  }
-}
-
-const generator = new Generator(STARTING_POSITION, null, null)
+//const position = graph.getNodeAttribute(key, "position")
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
-  const [board, setBoard] = useState(STARTING_POSITION)
-  //const [generator] = useState(new Generator(STARTING_POSITION, dispatch, setBoard))
-  generator.dispatch = dispatch
-  generator.setBoard = setBoard
+  const boardRef = useRef<HTMLDivElement>(null)
+  const graphRef = useRef<HTMLDivElement>(null)
+  const mediator = useRef<Mediator | null>(null)
 
-  function reducer(state: any, position: any) {
-    state.config.fen = position
-    return state
-  }
+  useEffect(() => {
+    mediator.current = new Mediator(boardRef, graphRef)
+  })
 
   return (
     <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
-      <Chessground key={board} config={state.config} height={400} width={400}></Chessground>
-      <Graph generator={generator} />
+      <div ref={boardRef} style={{ width: "600px", height: "600px" }} />
+      <div ref={graphRef} />
+      <Generator></Generator>
     </Stack>
   )
 }
