@@ -37,7 +37,7 @@ type GraphAttributes = {
 
 const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500]
 
-function openingGenerator(fen: string, side: Color, maxDepth: number = 5): GraphType {
+function openingGenerator(fen: string, side: Color, maxDepth: number = 5): [GraphType, [string]] {
   const graph: GraphType = new Graph()
   let currentNodeKey = 0
   generate([fen], 0, -1)
@@ -81,7 +81,7 @@ function openingGenerator(fen: string, side: Color, maxDepth: number = 5): Graph
       })
     }
   }
-  return graph
+  return [graph, [fen]]
 }
 
 async function movesMaster(position: string): Promise<MovesDatabase> {

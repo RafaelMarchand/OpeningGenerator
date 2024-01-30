@@ -1,4 +1,4 @@
-import { Color } from "./Generator"
+import { Color } from "../../Generator"
 
 type MovesDatabase = {
   white: number

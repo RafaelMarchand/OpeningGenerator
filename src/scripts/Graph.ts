@@ -1,6 +1,11 @@
-import { RefObject } from "react"
-import GraphDrawer from "../node_modules/graph-drawer/src/main.js"
+import { RefObject, VoidFunctionComponent } from "react"
+import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
 import Graphology from "graphology"
+import Board from "./Board.js"
+
+type NodeAttributes = {
+  value: number
+}
 
 interface GraphMethods {
   getNodeKeys: (graph: Graphology) => string[]
@@ -31,8 +36,7 @@ const GRAPH_METHODS: GraphMethods = {
   getOutEdgesKeys: (graph: Graphology, nodeKey: string) =>
     graph.mapOutEdges(nodeKey, (edge: any) => edge),
   getDestNodeKey: (graph: Graphology, edgeKey: string) => graph.target(edgeKey),
-  getNodeValue: (graph: Graphology, nodeKey: string) =>
-    graph.getNodeAttribute(nodeKey, "value").value,
+  getNodeValue: (graph: Graphology, nodeKey: string) => 0,
   getNodeFocus: (graph: Graphology, nodeKey: string) => {
     if (nodeKey === graph.getAttribute("focus")) {
       return true
@@ -41,31 +45,48 @@ const GRAPH_METHODS: GraphMethods = {
   }
 }
 
-export default class Graph {
-  config: any
-  graphDrawer: any
-  graph: Graphology
+type callbacks = (key: string) => void
 
-  constructor(ref: RefObject<HTMLDivElement>) {
+export default class Graph {
+  graph: Graphology<NodeAttributes>
+  rootNodes: [string]
+  graphDrawer: GraphDrawer
+
+  constructor(ref: RefObject<HTMLDivElement>, nodeOnClick: callbacks, nodeOnHover: callbacks) {
     this.graph = new Graphology()
+    this.graph.addNode(Board.STARTING_POSITION)
+    this.rootNodes = [Board.STARTING_POSITION]
     this.graphDrawer = new GraphDrawer(
       GRAPH_METHODS,
       ref.current,
       GRAPH_DRAWR_OPTIONS,
-      this.nodeOnClick,
-      this.nodeOnHover
+      nodeOnClick,
+      nodeOnHover
     )
   }
 
-  draw(graph: Graphology, rootNodes: [String]) {
-    this.graphDrawer.drawGraph(graph, rootNodes)
+  addNode(position: string) {
+    const nodeKey: string | undefined = this.graph.findNode((key: string) => {
+      return key === position
+    })
+    if (!nodeKey) {
+      this.graph.addNode(position)
+    }
   }
 
-  nodeOnClick(key: string) {
-    //generator.nodeOnClick(key)
+  addEdge(position: string, lastPosition: string) {
+    if (position !== lastPosition && !this.graph.hasEdge(position, lastPosition)) {
+      this.graph.addEdge(lastPosition, position)
+    }
   }
 
-  nodeOnHover(key: string) {
-    //generator.hoverOnNode(key)
+  update(position: string, lastPosition: string) {
+    this.addNode(position)
+    this.addEdge(position, lastPosition)
+    this.draw()
+  }
+
+  draw() {
+    this.graphDrawer.drawGraph(this.graph, this.rootNodes)
   }
 }

@@ -1,10 +1,8 @@
 import { useEffect, useReducer, useRef, useState } from "react"
-
-import openingGenerator from "./utilities"
 import Generator from "./Generator"
 import Stack from "@mui/joy/Stack"
 
-import Mediator from "./Mediator"
+import Mediator from "./scripts/Mediator"
 import "../node_modules/chessground/assets/chessground.base.css"
 import "../node_modules/chessground/assets/chessground.brown.css"
 import "../node_modules/chessground/assets/chessground.cburnett.css"

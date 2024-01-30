@@ -55,7 +55,6 @@ export default function Generator() {
         />
       </Box>
       <Button disabled={false} onClick={function () {}} size="lg">
-        {" "}
         Generate Opening
       </Button>
     </Stack>
