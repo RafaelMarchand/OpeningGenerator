@@ -1,0 +1,111 @@
+import Graphology from "graphology"
+import { NodeAttributes } from "./Graph"
+import { Chess } from "chess.js"
+import {}
+import DatabaseResult from "./DatabaseResult"
+
+export type Color = "b" | "w"
+
+type MovesDatabase = {
+  white: number
+  black: number
+  draws: number
+  moves: [Move]
+}
+
+type Move = {
+  uci: string
+  san: string
+  averageRaiting: number
+  white: number
+  black: number
+  draws: number
+}
+
+const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500]
+
+export default class Generator {
+  changeListener: any
+  graph: Graphology<NodeAttributes>
+  constructor(changeListener: any) {
+    this.changeListener = changeListener
+    this.graph = new Graphology()
+  }
+
+  generate(fens: string[], depth: number, previousPosition: string, side: Color, maxDepth:number) {
+    for (const position of fens) {
+      const colorToMove = position.split(" ")[1]
+      // add node and edge
+      this.graph.mergeNode(position)
+      if (previousPosition !== "") {
+        this.graph.addEdge(previousPosition, position)
+      }
+
+      // fetch new mvoes
+      this.movesMaster(position).then((result) => {
+        const databaseResult = new DatabaseResult(result)
+        let resultingPositions = []
+
+        if (colorToMove === side) {
+          resultingPositions.push(databaseResult.bestMoveByWinningPercentage(side))
+        } else {
+          resultingPositions = databaseResult.mostFrequentMoves(0)
+        }
+
+        resultingPositions = resultingPositions.map((move) => {
+          const chess = new Chess()
+          chess.load(position)
+          chess.move(move.uci)
+          return chess.fen()
+        })
+
+        if (depth < maxDepth) {
+          this.generate(resultingPositions, depth + 1, position, side, maxDepth)
+        }
+      })
+    }
+  }
+
+  async movesMaster(position: string): Promise<MovesDatabase> {
+    const numberOfMoves = 2
+
+    const params = new URLSearchParams()
+    params.append("fen", position)
+    params.append("moves", String(numberOfMoves))
+
+    const result = await fetch(`https://explorer.lichess.ovh/masters?${params.toString()}`).then(
+      (response) => response.json()
+    )
+    return result
+  }
+
+  async movesPlayers(): Promise<MovesDatabase> {
+    const fen = "rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"
+    const numberOfMoves = 5
+    const lowestRaiting = 1000
+    const highestRaiting = 2000
+    let raitingRange = ""
+
+    RAITING_RANGES.forEach((range) => {
+      if (range >= lowestRaiting && range < highestRaiting) {
+        if (raitingRange != "") {
+          raitingRange += ","
+        }
+        raitingRange += range
+      }
+    })
+
+    const params = new URLSearchParams()
+    params.append("variant", "standard")
+    params.append("speeds", "blitz,rapid,classical")
+    params.append("raitings", raitingRange)
+    params.append("fen", fen)
+    params.append("moves", String(numberOfMoves))
+
+    const moves = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`).then(
+      (response) => response.json()
+    )
+
+    return JSON.parse(JSON.stringify(moves))
+  }
+}

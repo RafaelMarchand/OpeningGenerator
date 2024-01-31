@@ -1,10 +1,15 @@
 import { Box, Button, Slider, Stack, Typography } from "@mui/joy"
-import React, { useState } from "react"
+import React, { RefObject, useState } from "react"
+import Mediator from "./scripts/Mediator"
 
 const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500, 3000]
 const RATITNG_LABELS = [0, 1000, 1600, 2000, 2500, 3000]
 
-export default function Generator() {
+interface Props {
+  mediatorRef: RefObject<Mediator | null>
+}
+
+export default function Generator({ mediatorRef }: Props) {
   const [range, setRange] = useState<number[]>([RAITING_RANGES[2], RAITING_RANGES[5]])
 
   function handleRaitingRange(event: Event, range: number | number[], activeThumb: number) {
@@ -31,6 +36,12 @@ export default function Generator() {
     }
   }
 
+  function onClickGenerate() {
+    if (mediatorRef?.current?.generate()) {
+      mediatorRef.current!.generate()
+    }
+  }
+
   return (
     <Stack direction="column" justifyContent="space-evenly" alignItems="stretcht" spacing={2}>
       <Box sx={{ width: 300, pr: 2.5, pl: 2.5 }}>
@@ -54,7 +65,7 @@ export default function Generator() {
           })}
         />
       </Box>
-      <Button disabled={false} onClick={function () {}} size="lg">
+      <Button disabled={false} onClick={onClickGenerate} size="lg">
         Generate Opening
       </Button>
     </Stack>

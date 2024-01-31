@@ -2,9 +2,16 @@ import { RefObject, VoidFunctionComponent } from "react"
 import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
 import Graphology from "graphology"
 import Board from "./Board.js"
+import { Chess } from "chess.js"
+import DatabaseResult from "./DatabaseResult.js"
+import { Color, movesMaster } from "./utils.js"
 
 type NodeAttributes = {
   value: number
+}
+
+type GraphAttributes = {
+  focus: string
 }
 
 interface GraphMethods {
@@ -17,7 +24,7 @@ interface GraphMethods {
 
 const GRAPH_DRAWR_OPTIONS = {
   width: 1000,
-  height: 600,
+  height: 500,
   nodeRadius: 5,
   nodeRadiusHover: 10,
   nodeRadiusFocus: 10,
@@ -45,14 +52,16 @@ const GRAPH_METHODS: GraphMethods = {
   }
 }
 
-type callbacks = (key: string) => void
-
 export default class Graph {
-  graph: Graphology<NodeAttributes>
+  graph: Graphology<NodeAttributes, GraphAttributes>
   rootNodes: [string]
   graphDrawer: GraphDrawer
 
-  constructor(ref: RefObject<HTMLDivElement>, nodeOnClick: callbacks, nodeOnHover: callbacks) {
+  constructor(
+    ref: RefObject<HTMLDivElement>,
+    nodeOnClick: (key: string) => void,
+    nodeOnHover: (key: string, event: MouseEvent) => void
+  ) {
     this.graph = new Graphology()
     this.graph.addNode(Board.STARTING_POSITION)
     this.rootNodes = [Board.STARTING_POSITION]
@@ -66,17 +75,12 @@ export default class Graph {
   }
 
   addNode(position: string) {
-    const nodeKey: string | undefined = this.graph.findNode((key: string) => {
-      return key === position
-    })
-    if (!nodeKey) {
-      this.graph.addNode(position)
-    }
+    this.graph.mergeNode(position)
   }
 
   addEdge(position: string, lastPosition: string) {
-    if (position !== lastPosition && !this.graph.hasEdge(position, lastPosition)) {
-      this.graph.addEdge(lastPosition, position)
+    if (position !== lastPosition) {
+      this.graph.mergeEdge(lastPosition, position)
     }
   }
 
@@ -88,5 +92,47 @@ export default class Graph {
 
   draw() {
     this.graphDrawer.drawGraph(this.graph, this.rootNodes)
+  }
+
+  setActiveNode(position: string) {
+    this.graph.setAttribute("focus", position)
+    this.draw()
+  }
+
+  generateOpening(position: string, side: Color, maxDepth: number = 5) {
+    const generate = (fens: string[], depth: number, previousPosition: string) => {
+      for (const position of fens) {
+        const colorToMove = position.split(" ")[1]
+        this.addNode(position)
+        if (previousPosition !== "") {
+          this.addEdge(position, previousPosition)
+        }
+        this.draw()
+
+        // fetch new mvoes
+        movesMaster(position).then((result) => {
+          const databaseResult = new DatabaseResult(result)
+          let resultingPositions = []
+
+          if (colorToMove === side) {
+            resultingPositions.push(databaseResult.bestMoveByWinningPercentage(side))
+          } else {
+            resultingPositions = databaseResult.mostFrequentMoves(0)
+          }
+
+          resultingPositions = resultingPositions.map((move) => {
+            const chess = new Chess()
+            chess.load(position)
+            chess.move(move.uci)
+            return chess.fen()
+          })
+
+          if (depth < maxDepth) {
+            generate(resultingPositions, depth + 1, position)
+          }
+        })
+      }
+    }
+    generate([position], 0, "")
   }
 }
