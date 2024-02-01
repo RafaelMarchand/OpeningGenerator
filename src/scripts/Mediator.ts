@@ -2,6 +2,7 @@ import { RefObject } from "react"
 import Board from "./Board"
 import Graph from "./Graph"
 import * as cg from "chessground/types"
+import { Options } from "../Generator"
 
 export default class Mediator {
   board: Board
@@ -24,8 +25,8 @@ export default class Mediator {
     this.graph = new Graph(graphRef, this.graphClick, this.graphHover)
   }
 
-  generate() {
-    this.graph.generateOpening(this.board.getPosition(), "w")
+  generate(options: Options) {
+    this.graph.generateOpening(this.board.getPosition(), options)
   }
 
   boardMove(orig: cg.Key, dest: cg.Key) {

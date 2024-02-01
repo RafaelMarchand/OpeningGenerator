@@ -19,15 +19,14 @@ function App() {
 
   function nodeHoverHandler(position: string, nodePos: any) {
     const { left, top } = graphRef.current!.getBoundingClientRect()
-
     if (position !== undefined) {
       setBoardPopUp(true)
       setConfig({
         config: {
           fen: position
         },
-        offsetX: nodePos.x + left + 15,
-        offsetY: nodePos.y + top + 15
+        offsetX: left + nodePos.x + 15,
+        offsetY: top + nodePos.y + 15
       })
     } else {
       setBoardPopUp(false)
@@ -39,13 +38,15 @@ function App() {
   }, [])
 
   return (
-    <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
-      <div ref={boardRef} style={{ width: "400px", height: "400px" }} />
-      <Box>
-        <Box ref={graphRef} sx={{ zIndex: "1" }}></Box>
-        <BoardPopUp show={boardPopUp} config={config} />
-      </Box>
+    <Stack direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={2}>
       <Generator mediatorRef={mediator}></Generator>
+      <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
+        <div ref={boardRef} style={{ width: "400px", height: "400px" }} />
+        <Box>
+          <Box ref={graphRef}></Box>
+          <BoardPopUp show={boardPopUp} config={config} />
+        </Box>
+      </Stack>
     </Stack>
   )
 }

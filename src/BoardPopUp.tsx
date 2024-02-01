@@ -13,7 +13,8 @@ export default function BoardPopUp({ show, config }: Props) {
           style={{
             position: "absolute",
             left: `${config.offsetX}px`,
-            top: `${config.offsetY}px`
+            top: `${config.offsetY}px`,
+            zIndex: "1"
           }}>
           <Chessground config={config.config} width={100} height={100}></Chessground>
         </div>

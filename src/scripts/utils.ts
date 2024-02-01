@@ -1,3 +1,7 @@
+import { Chess } from "chess.js"
+import { Options } from "../Generator"
+import DatabaseResult from "./DatabaseResult"
+
 export type Color = "b" | "w"
 
 type MovesDatabase = {
@@ -17,6 +21,29 @@ type Move = {
 }
 
 const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500]
+
+export async function nextMoves(position: string, options: Options): Promise<string[]> {
+  return await movesMaster(position).then((result) => {
+    const databaseResult = new DatabaseResult(result)
+    let resultingPositions = []
+
+    const colorToMove = position.split(" ")[1]
+    if (colorToMove === options.color) {
+      resultingPositions.push(databaseResult.bestMoveByWinningPercentage(options.color))
+    } else {
+      resultingPositions = databaseResult.mostFrequentMoves(0)
+    }
+
+    resultingPositions = resultingPositions.map((move) => {
+      const chess = new Chess()
+      chess.load(position)
+      chess.move(move.uci)
+      return chess.fen()
+    })
+
+    return resultingPositions
+  })
+}
 
 export async function movesMaster(position: string): Promise<MovesDatabase> {
   const numberOfMoves = 2
@@ -54,9 +81,9 @@ export async function movesPlayers(): Promise<MovesDatabase> {
   params.append("fen", fen)
   params.append("moves", String(numberOfMoves))
 
-  const moves = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`).then(
-    (response) => response.json()
-  )
+  const result = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`)
+    .then((response) => response.json())
+    .catch((error) => console.log(error))
 
-  return JSON.parse(JSON.stringify(moves))
+  return result
 }

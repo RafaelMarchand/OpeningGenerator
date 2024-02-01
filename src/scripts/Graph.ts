@@ -1,10 +1,10 @@
-import { RefObject, VoidFunctionComponent } from "react"
+import { RefObject } from "react"
 import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
+//import GraphDrawer from "graph-drawer"
 import Graphology from "graphology"
 import Board from "./Board.js"
-import { Chess } from "chess.js"
-import DatabaseResult from "./DatabaseResult.js"
-import { Color, movesMaster } from "./utils.js"
+import { nextMoves } from "./utils.js"
+import { Options } from "../Generator"
 
 type NodeAttributes = {
   value: number
@@ -99,40 +99,18 @@ export default class Graph {
     this.draw()
   }
 
-  generateOpening(position: string, side: Color, maxDepth: number = 5) {
-    const generate = (fens: string[], depth: number, previousPosition: string) => {
+  generateOpening(position: string, options: Options) {
+    const generate = (fens: string[], depth: number, lastPosition: string) => {
       for (const position of fens) {
-        const colorToMove = position.split(" ")[1]
-        this.addNode(position)
-        if (previousPosition !== "") {
-          this.addEdge(position, previousPosition)
-        }
-        this.draw()
+        this.update(position, lastPosition)
 
-        // fetch new mvoes
-        movesMaster(position).then((result) => {
-          const databaseResult = new DatabaseResult(result)
-          let resultingPositions = []
-
-          if (colorToMove === side) {
-            resultingPositions.push(databaseResult.bestMoveByWinningPercentage(side))
-          } else {
-            resultingPositions = databaseResult.mostFrequentMoves(0)
-          }
-
-          resultingPositions = resultingPositions.map((move) => {
-            const chess = new Chess()
-            chess.load(position)
-            chess.move(move.uci)
-            return chess.fen()
-          })
-
-          if (depth < maxDepth) {
-            generate(resultingPositions, depth + 1, position)
+        nextMoves(position, options).then((nextPositions) => {
+          if (depth < options.depth) {
+            generate(nextPositions, depth + 1, position)
           }
         })
       }
     }
-    generate([position], 0, "")
+    generate([position], 0, position)
   }
 }
