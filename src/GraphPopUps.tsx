@@ -45,7 +45,7 @@ export default function GraphPopUps({ mediatorRef, graphRef, state }: Props) {
           }}>
           {showBoard && <Chessground config={config} width={100} height={100} />}
           {state.showRemoveButton && (
-            <Button color="danger" onClick={() => mediatorRef.current?.removeNode(state.fen)}>
+            <Button color="danger" onClick={() => mediatorRef.current?.removePosition(state.fen)}>
               Remove Position{" "}
             </Button>
           )}

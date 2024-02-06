@@ -1,24 +1,26 @@
-import { Dispatch, RefObject } from "react"
+import { RefObject } from "react"
 import Board from "./Board"
 import Graph, { NodePosition } from "./Graph"
 import * as cg from "chessground/types"
 import { Options } from "../Generator"
-import { DispatchGraphPopUp } from "../App"
+import Observable from "./Observable"
 
 const MOUSE_LEFT = 0
 const MOUSE_RIGHT = 2
+const DELAY_HIDE_REMOVE_BUTTON = 2000
 
 type Ref = RefObject<HTMLDivElement>
 
-export default class Mediator {
+export default class Mediator extends Observable {
   board: Board
   graph: Graph
-  dispatchGraphPopUps: Dispatch<DispatchGraphPopUp>
+  hideButtonTimeOutID: number | null
 
-  constructor(boardRef: Ref, graphRef: Ref, dispatchGraphPopUps: Dispatch<DispatchGraphPopUp>) {
+  constructor(boardRef: Ref, graphRef: Ref) {
+    super()
     this.board = new Board(boardRef, (orig: cg.Key, dest: cg.Key) => this.boardMove(orig, dest))
     this.graph = new Graph(graphRef)
-    this.dispatchGraphPopUps = dispatchGraphPopUps
+    this.hideButtonTimeOutID = null
 
     this.setUpListeners()
   }
@@ -28,14 +30,25 @@ export default class Mediator {
       if (event.button === MOUSE_LEFT) {
         this.board.setPosition(fen)
       } else if (event.button === MOUSE_RIGHT) {
-        this.dispatchGraphPopUps({ type: "showButton", payload: { fen, position } })
+        super.notify("dspatchGraphPopUp", { type: "showButton", payload: { fen, position } })
       }
     })
     this.graph.listen("nodeHover", (fen: string, position: NodePosition) => {
       if (fen !== undefined) {
-        this.dispatchGraphPopUps({ type: "showBoard", payload: { fen, position } })
+        super.notify("dspatchGraphPopUp", { type: "showBoard", payload: { fen, position } })
+        if (this.hideButtonTimeOutID) {
+          super.notify("dspatchGraphPopUp", { type: "hideButton", payload: {} })
+          clearTimeout(this.hideButtonTimeOutID)
+        }
       } else {
-        this.dispatchGraphPopUps({ type: "hideBoard", payload: {} })
+        super.notify("dspatchGraphPopUp", { type: "hideBoard", payload: {} })
+        this.hideButtonTimeOutID = setTimeout(() => {
+          this.hideButtonTimeOutID = null
+          super.notify("dspatchGraphPopUp", {
+            type: "hideButton",
+            payload: {}
+          })
+        }, DELAY_HIDE_REMOVE_BUTTON)
       }
     })
   }
@@ -51,8 +64,8 @@ export default class Mediator {
     this.graph.update(position, lastPosition)
   }
 
-  removeNode(fen: string) {
+  removePosition(fen: string) {
     this.graph.removeNode(fen)
-    this.dispatchGraphPopUps({ type: "hideButton", payload: {} })
+    super.notify("dspatchGraphPopUp", { type: "hideButton", payload: {} })
   }
 }

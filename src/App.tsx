@@ -3,16 +3,12 @@ import Generator from "./Generator"
 import Stack from "@mui/joy/Stack"
 
 import Mediator from "./scripts/Mediator"
-import { Box, Button } from "@mui/joy"
+import { Box } from "@mui/joy"
 
 import "../node_modules/chessground/assets/chessground.base.css"
 import "../node_modules/chessground/assets/chessground.brown.css"
 import "../node_modules/chessground/assets/chessground.cburnett.css"
-import NodePoPUp, { PositionPopUp } from "./RemoveNode"
-import { NodePosition, NodePosition as Position } from "./scripts/Graph"
-import Chessground from "@react-chess/chessground"
-import BoardPopUp from "./GraphPopUps"
-import RemoveNodePopUp from "./RemoveNode"
+import { NodePosition as Position } from "./scripts/Graph"
 import Board from "./scripts/Board"
 import GraphPopUps from "./GraphPopUps"
 
@@ -72,7 +68,8 @@ function App() {
   const [graphPopUps, dispatchGraphPopUps] = useReducer(reducerGraphPopUps, DEFAULT_GRAPH_POPUPS)
 
   useEffect(() => {
-    mediatorRef.current = new Mediator(boardRef, graphRef, dispatchGraphPopUps)
+    mediatorRef.current = new Mediator(boardRef, graphRef)
+    mediatorRef.current.listen("dspatchGraphPopUp", dispatchGraphPopUps)
     graphRef.current!.addEventListener("contextmenu", (e) => e.preventDefault())
     //document.addEventListener("mouseup", () => console.log("hi"))
   }, [])
