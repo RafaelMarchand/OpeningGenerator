@@ -1,52 +1,17 @@
-import { Chess } from "chess.js"
 import { Options } from "../Generator"
-import DatabaseResult from "./DatabaseResult"
-
-export type Color = "b" | "w"
-
-type MovesDatabase = {
-  white: number
-  black: number
-  draws: number
-  moves: [Move]
-}
-
-type Move = {
-  uci: string
-  san: string
-  averageRaiting: number
-  white: number
-  black: number
-  draws: number
-}
+import DatabaseResult, { Move, MovesDatabase } from "./DatabaseResult"
 
 const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500]
 
 export async function nextMoves(position: string, options: Options): Promise<string[]> {
-  return await movesMaster(position).then((result) => {
+  return await movesPlayers(position, options.rangeOpponent).then((result) => {
     const databaseResult = new DatabaseResult(result)
-    let resultingPositions = []
-
-    const colorToMove = position.split(" ")[1]
-    if (colorToMove === options.color) {
-      resultingPositions.push(databaseResult.bestMoveByWinningPercentage(options.color))
-    } else {
-      resultingPositions = databaseResult.mostFrequentMoves(0)
-    }
-
-    resultingPositions = resultingPositions.map((move) => {
-      const chess = new Chess()
-      chess.load(position)
-      chess.move(move.uci)
-      return chess.fen()
-    })
-
-    return resultingPositions
+    return databaseResult.getMoves(position, options)
   })
 }
 
-export async function movesMaster(position: string): Promise<MovesDatabase> {
-  const numberOfMoves = 2
+async function movesMaster(position: string): Promise<MovesDatabase> {
+  const numberOfMoves = 12
 
   const params = new URLSearchParams()
   params.append("fen", position)
@@ -58,13 +23,11 @@ export async function movesMaster(position: string): Promise<MovesDatabase> {
   return result
 }
 
-export async function movesPlayers(): Promise<MovesDatabase> {
-  const fen = "rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"
-  const numberOfMoves = 5
-  const lowestRaiting = 1000
-  const highestRaiting = 2000
-  let raitingRange = ""
+async function movesPlayers(position: string, range: number[]): Promise<MovesDatabase> {
+  const lowestRaiting = range[0]
+  const highestRaiting = range[1]
 
+  let raitingRange = ""
   RAITING_RANGES.forEach((range) => {
     if (range >= lowestRaiting && range < highestRaiting) {
       if (raitingRange != "") {
@@ -73,17 +36,17 @@ export async function movesPlayers(): Promise<MovesDatabase> {
       raitingRange += range
     }
   })
+  const numberOfMoves = 12
 
   const params = new URLSearchParams()
   params.append("variant", "standard")
   params.append("speeds", "blitz,rapid,classical")
   params.append("raitings", raitingRange)
-  params.append("fen", fen)
+  params.append("fen", position)
   params.append("moves", String(numberOfMoves))
 
   const result = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`)
     .then((response) => response.json())
     .catch((error) => console.log(error))
-
   return result
 }

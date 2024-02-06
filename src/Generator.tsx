@@ -1,8 +1,8 @@
-import { Box, Button, Select, Slider, Stack, Switch, Typography, Option } from "@mui/joy"
-import React, { ChangeEvent, RefObject, SyntheticEvent, useReducer, useState } from "react"
+import { Button, Select, Stack, Switch, Typography, Option } from "@mui/joy"
+import { RefObject, SyntheticEvent, useReducer } from "react"
 import Mediator from "./scripts/Mediator"
 import RaitingSlider from "./RaitingSlider"
-import { Color } from "./scripts/utils"
+import { Color } from "./scripts/DatabaseResult"
 
 interface Props {
   mediatorRef: RefObject<Mediator | null>
@@ -13,6 +13,7 @@ export type Options = {
   depth: number
   maxLineSpread: number
   randomness: boolean
+  rareRepertoire: boolean
   rangeOpeningMoves: number[]
   rangeOpponent: number[]
 }
@@ -25,6 +26,7 @@ export type reducerAction =
   | "randomness"
   | "rangeOpeningMoves"
   | "rangeOpponent"
+  | "rareRepertoire"
 
 export interface DispatchParams {
   type: reducerAction
@@ -34,10 +36,11 @@ export interface DispatchParams {
 export const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500, 3000]
 
 export const DEFAULT_OPTIONS: Options = {
-  color: "w",
+  color: "white",
   depth: 4,
   maxLineSpread: 3,
   randomness: true,
+  rareRepertoire: false,
   rangeOpeningMoves: [RAITING_RANGES[4], RAITING_RANGES[6]],
   rangeOpponent: [RAITING_RANGES[4], RAITING_RANGES[6]]
 }
@@ -106,16 +109,20 @@ export default function Generator({ mediatorRef }: Props) {
         <Option value={5}>5</Option>
       </Select>
 
-      <RaitingSlider
-        text="Raiting Opponents"
-        dispatchOptions={dispatchOptions}
-        action={"rangeOpponent"}
-      />
-      <RaitingSlider
-        text="Raiting Repetoir"
-        dispatchOptions={dispatchOptions}
-        action={"rangeOpeningMoves"}
-      />
+      <RaitingSlider text="Raiting Opponents" dispatchOptions={dispatchOptions} action={"rangeOpponent"} />
+      <RaitingSlider text="Raiting Repetoir" dispatchOptions={dispatchOptions} action={"rangeOpeningMoves"} />
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
+        <Typography color="primary" level="h4">
+          Rare Repertoire
+        </Typography>
+        <Switch
+          variant="solid"
+          checked={options.rareRepertoire}
+          onChange={(event) => {
+            dispatchOptions({ type: "rareRepertoire", payload: event.target.checked })
+          }}
+        />
+      </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
         <Typography color="primary" level="h4">
           Randomness
@@ -124,8 +131,6 @@ export default function Generator({ mediatorRef }: Props) {
           variant="solid"
           checked={options.randomness}
           onChange={(event) => {
-            //setRandomness(event.target.checked)
-            console.log(event.target.checked)
             dispatchOptions({ type: "randomness", payload: event.target.checked })
           }}
         />

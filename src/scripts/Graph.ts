@@ -5,6 +5,7 @@ import Graphology from "graphology"
 import Board from "./Board.js"
 import { nextMoves } from "./utils.js"
 import { Options } from "../Generator"
+import Observable from "./Observable.js"
 
 type NodeAttributes = {
   value: number
@@ -12,6 +13,11 @@ type NodeAttributes = {
 
 type GraphAttributes = {
   focus: string
+}
+
+export type NodePosition = {
+  x: number
+  y: number
 }
 
 interface GraphMethods {
@@ -40,8 +46,7 @@ const GRAPH_DRAWR_OPTIONS = {
 
 const GRAPH_METHODS: GraphMethods = {
   getNodeKeys: (graph: Graphology) => graph.mapNodes((key: string) => key),
-  getOutEdgesKeys: (graph: Graphology, nodeKey: string) =>
-    graph.mapOutEdges(nodeKey, (edge: any) => edge),
+  getOutEdgesKeys: (graph: Graphology, nodeKey: string) => graph.mapOutEdges(nodeKey, (edge: any) => edge),
   getDestNodeKey: (graph: Graphology, edgeKey: string) => graph.target(edgeKey),
   getNodeValue: (graph: Graphology, nodeKey: string) => 0,
   getNodeFocus: (graph: Graphology, nodeKey: string) => {
@@ -52,41 +57,45 @@ const GRAPH_METHODS: GraphMethods = {
   }
 }
 
-export default class Graph {
+export default class Graph extends Observable {
   graph: Graphology<NodeAttributes, GraphAttributes>
   rootNodes: [string]
   graphDrawer: GraphDrawer
 
-  constructor(
-    ref: RefObject<HTMLDivElement>,
-    nodeOnClick: (key: string) => void,
-    nodeOnHover: (key: string, event: MouseEvent) => void
-  ) {
+  constructor(ref: RefObject<HTMLDivElement>) {
+    super()
     this.graph = new Graphology()
-    this.graph.addNode(Board.STARTING_POSITION)
     this.rootNodes = [Board.STARTING_POSITION]
     this.graphDrawer = new GraphDrawer(
       GRAPH_METHODS,
       ref.current,
       GRAPH_DRAWR_OPTIONS,
-      nodeOnClick,
-      nodeOnHover
+      (key: string, nodePosition: NodePosition, event: MouseEvent) =>
+        super.notify("nodeClick", key, nodePosition, event),
+      (key: string, nodePosition: NodePosition) => super.notify("nodeHover", key, nodePosition)
     )
+
+    this.graph.addNode(Board.STARTING_POSITION)
   }
 
-  addNode(position: string) {
-    this.graph.mergeNode(position)
+  addNode(fen: string) {
+    this.graph.mergeNode(fen)
   }
 
-  addEdge(position: string, lastPosition: string) {
-    if (position !== lastPosition) {
-      this.graph.mergeEdge(lastPosition, position)
+  addEdge(fen: string, prevFen: string) {
+    if (fen !== prevFen) {
+      this.graph.mergeEdge(prevFen, fen)
     }
   }
 
-  update(position: string, lastPosition: string) {
-    this.addNode(position)
-    this.addEdge(position, lastPosition)
+  update(fen: string, prevFen: string) {
+    this.addNode(fen)
+    this.addEdge(fen, prevFen)
+    this.draw()
+  }
+
+  removeNode(fen: string) {
+    this.graph.dropNode(fen)
     this.draw()
   }
 
@@ -94,23 +103,24 @@ export default class Graph {
     this.graphDrawer.drawGraph(this.graph, this.rootNodes)
   }
 
-  setActiveNode(position: string) {
-    this.graph.setAttribute("focus", position)
+  setActiveNode(fen: string) {
+    this.graph.setAttribute("focus", fen)
     this.draw()
   }
 
-  generateOpening(position: string, options: Options) {
-    const generate = (fens: string[], depth: number, lastPosition: string) => {
-      for (const position of fens) {
-        this.update(position, lastPosition)
+  generateOpening(fen: string, options: Options) {
+    console.log(options)
+    const generate = (fens: string[], depth: number, prevFen: string) => {
+      for (const fen of fens) {
+        this.update(fen, prevFen)
 
-        nextMoves(position, options).then((nextPositions) => {
+        nextMoves(fen, options).then((nextPositions) => {
           if (depth < options.depth) {
-            generate(nextPositions, depth + 1, position)
+            generate(nextPositions, depth + 1, fen)
           }
         })
       }
     }
-    generate([position], 0, position)
+    generate([fen], 0, fen)
   }
 }
