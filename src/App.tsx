@@ -71,7 +71,6 @@ function App() {
     mediatorRef.current = new Mediator(boardRef, graphRef)
     mediatorRef.current.listen("dspatchGraphPopUp", dispatchGraphPopUps)
     graphRef.current!.addEventListener("contextmenu", (e) => e.preventDefault())
-    //document.addEventListener("mouseup", () => console.log("hi"))
   }, [])
 
   return (
