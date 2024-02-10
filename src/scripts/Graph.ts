@@ -71,8 +71,9 @@ export default class Graph extends Observable {
       ref.current,
       GRAPH_DRAWR_OPTIONS,
       (key: string, nodePosition: NodePosition, event: MouseEvent) =>
-        super.notify("nodeClick", key, nodePosition, event),
-      (key: string, nodePosition: NodePosition) => super.notify("nodeHover", key, nodePosition)
+        this.notify("nodeClick", key, nodePosition, event),
+      (key: string, nodePosition: NodePosition, event: MouseEvent) =>
+        this.notify("nodeHover", key, nodePosition, event)
     )
 
     this.graph.addNode(Board.STARTING_POSITION)
@@ -104,7 +105,7 @@ export default class Graph extends Observable {
   }
 
   setActiveNode(fen: string) {
-    this.graph.setAttribute("focus", fen)
+    //this.graph.setAttribute("focus", fen)
     this.draw()
   }
 

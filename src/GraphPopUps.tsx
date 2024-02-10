@@ -1,24 +1,77 @@
 import Chessground from "@react-chess/chessground"
-import { RefObject } from "react"
+import { RefObject, useEffect, useReducer } from "react"
 import Mediator from "./scripts/Mediator"
 import { Button } from "@mui/joy"
-import { GraphPopUpsState } from "./App"
-import { NodePosition } from "./scripts/Graph"
-
-export interface PositionPopUp {
-  x: number
-  y: number
-}
+import { NodePosition as Position } from "./scripts/Graph"
+import Board from "./scripts/Board"
+import DelayHandler from "./scripts/DelayHandler"
 
 interface Props {
-  mediatorRef: RefObject<Mediator | null>
+  mediator: Mediator
   graphRef: RefObject<HTMLDivElement>
-  state: GraphPopUpsState
 }
 
-const OFFSET_NODE_POPUP = 15
+export interface DispatchGraphPopUp {
+  type: reducerAction
+  payload: any
+}
 
-function getPosition(position: NodePosition, graphRef: RefObject<HTMLDivElement>): NodePosition {
+export type reducerAction = "showButton" | "hideButton" | "showBoard" | "hideBoard"
+
+export type GraphPopUpsState = {
+  showBoard: boolean
+  showRemoveButton: boolean
+  fen: string
+  position: Position
+}
+
+enum MouseEvents {
+  MouseUp = "mouseup",
+  MouseMove = "mousemove"
+}
+const OFFSET_NODE_POPUP = 15
+const DELAY_HIDE_REMOVE_BUTTON = 1000
+
+const DEFAULT_GRAPH_POPUPS: GraphPopUpsState = {
+  showBoard: false,
+  showRemoveButton: false,
+  fen: Board.STARTING_POSITION,
+  position: {
+    x: 0,
+    y: 0
+  }
+}
+
+function reducer(prevState: GraphPopUpsState, action: DispatchGraphPopUp): GraphPopUpsState {
+  const state = {
+    ...prevState
+  }
+  switch (action.type) {
+    case "showBoard":
+      state.showBoard = true
+      state.showRemoveButton = false
+      state.fen = action.payload.fen
+      state.position = action.payload.position
+      break
+    case "hideBoard":
+      if (!prevState.showBoard) return prevState
+      state.showBoard = false
+      break
+    case "showButton":
+      state.showBoard = false
+      state.showRemoveButton = true
+      state.fen = action.payload.fen
+      state.position = action.payload.position
+      break
+    case "hideButton":
+      if (!prevState.showRemoveButton) return prevState
+      state.showRemoveButton = false
+      break
+  }
+  return state
+}
+
+function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): Position {
   if (!graphRef.current) return { x: 0, y: 0 }
   const { left, top } = graphRef.current!.getBoundingClientRect()
   return {
@@ -27,12 +80,36 @@ function getPosition(position: NodePosition, graphRef: RefObject<HTMLDivElement>
   }
 }
 
-export default function GraphPopUps({ mediatorRef, graphRef, state }: Props) {
+const buttonDelayHandler = new DelayHandler()
+
+export default function GraphPopUps({ mediator, graphRef }: Props) {
+  const [state, dispatch] = useReducer(reducer, DEFAULT_GRAPH_POPUPS)
   const popUpPosition = getPosition(state.position, graphRef)
-  const showBoard = state.showBoard && !state.showRemoveButton
   const config = {
     fen: state.fen
   }
+
+  function mouseHandler(fen: string, position: Position, mouseEvent: MouseEvents) {
+    if (mouseEvent === MouseEvents.MouseUp && !state.showRemoveButton) {
+      dispatch({ type: "showButton", payload: { fen, position } })
+      buttonDelayHandler.cancle()
+    }
+    if (mouseEvent === MouseEvents.MouseMove && fen !== undefined) {
+      dispatch({ type: "showBoard", payload: { fen, position } })
+    }
+    if (mouseEvent === MouseEvents.MouseMove && fen === undefined) {
+      dispatch({ type: "hideBoard", payload: {} })
+      buttonDelayHandler.setTimer(DELAY_HIDE_REMOVE_BUTTON, dispatch, {
+        type: "hideButton",
+        payload: {}
+      })
+    }
+  }
+
+  useEffect(() => {
+    mediator.listen("mouseEvent", mouseHandler)
+  }, [])
+
   return (
     <>
       {
@@ -43,10 +120,19 @@ export default function GraphPopUps({ mediatorRef, graphRef, state }: Props) {
             top: `${popUpPosition.y}px`,
             zIndex: "2"
           }}>
-          {showBoard && <Chessground config={config} width={100} height={100} />}
+          {state.showBoard && <Chessground config={config} width={100} height={100} />}
           {state.showRemoveButton && (
-            <Button color="danger" onClick={() => mediatorRef.current?.removePosition(state.fen)}>
-              Remove Position{" "}
+            <Button
+              color="danger"
+              onMouseOver={() => buttonDelayHandler.cancle()}
+              onMouseLeave={() =>
+                buttonDelayHandler.setTimer(DELAY_HIDE_REMOVE_BUTTON, dispatch, {
+                  type: "hideButton",
+                  payload: {}
+                })
+              }
+              onClick={() => mediator?.removePosition(state.fen)}>
+              Remove Position
             </Button>
           )}
         </div>

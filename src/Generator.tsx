@@ -5,7 +5,7 @@ import RaitingSlider from "./RaitingSlider"
 import { Color } from "./scripts/DatabaseResult"
 
 interface Props {
-  mediatorRef: RefObject<Mediator | null>
+  mediator: Mediator | null
 }
 
 export type Options = {
@@ -52,11 +52,11 @@ function reducer(state: Options, action: DispatchParams): Options {
   }
 }
 
-export default function Generator({ mediatorRef }: Props) {
+export default function Generator({ mediator }: Props) {
   const [options, dispatchOptions] = useReducer(reducer, DEFAULT_OPTIONS)
 
   function onClickGenerate() {
-    mediatorRef?.current?.generate(options)
+    mediator?.generate(options)
   }
 
   return (

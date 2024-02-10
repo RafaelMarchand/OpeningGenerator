@@ -3,10 +3,9 @@ import { Chessground } from "chessground"
 import { Config } from "chessground/config"
 import { Chess } from "chess.js"
 import * as cg from "chessground/types"
+import Observable from "./Observable"
 
-type BoardMove = (orig: cg.Key, dest: cg.Key) => void
-
-export default class Board {
+export default class Board extends Observable {
   static STARTING_POSITION: string = (() => {
     const chess = new Chess()
     return chess.fen()
@@ -15,12 +14,13 @@ export default class Board {
   config: Config
   chessground: any
 
-  constructor(ref: RefObject<HTMLDivElement>, boardMove: BoardMove) {
+  constructor(ref: RefObject<HTMLDivElement>) {
+    super()
     this.config = {
       fen: Board.STARTING_POSITION,
       events: {
         move: (orig: cg.Key, dest: cg.Key) => {
-          boardMove(orig, dest)
+          this.notify("boardMove", orig, dest)
         }
       }
     }
