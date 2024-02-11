@@ -131,7 +131,13 @@ export default function GraphPopUps({ mediator, graphRef }: Props) {
                   payload: {}
                 })
               }
-              onClick={() => mediator?.removePosition(state.fen)}>
+              onClick={() => {
+                mediator?.removePosition(state.fen)
+                dispatch({
+                  type: "hideButton",
+                  payload: {}
+                })
+              }}>
               Remove Position
             </Button>
           )}

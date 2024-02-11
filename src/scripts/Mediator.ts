@@ -53,7 +53,7 @@ export default class Mediator extends Observable {
   }
 
   removePosition(fen: string) {
-    this.graph.removeNode(fen)
-    super.notify("dspatchGraphPopUp", { type: "hideButton", payload: {} })
+    const parentNode = this.graph.removeNode(fen)
+    this.board.setPosition(parentNode)
   }
 }

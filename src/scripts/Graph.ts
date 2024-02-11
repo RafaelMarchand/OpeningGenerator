@@ -64,7 +64,7 @@ export default class Graph extends Observable {
 
   constructor(ref: RefObject<HTMLDivElement>) {
     super()
-    this.graph = new Graphology()
+    this.graph = new Graphology({ type: "directed" })
     this.rootNodes = [Board.STARTING_POSITION]
     this.graphDrawer = new GraphDrawer(
       GRAPH_METHODS,
@@ -95,9 +95,23 @@ export default class Graph extends Observable {
     this.draw()
   }
 
-  removeNode(fen: string) {
-    this.graph.dropNode(fen)
+  removeNode(fen: string): string {
+    let parentNode = Board.STARTING_POSITION
+    this.graph.forEachInEdge(fen, (_edge, _attr, source) => {
+      parentNode = source
+    })
+    this.removeNodesRec(fen)
     this.draw()
+    return parentNode
+  }
+
+  removeNodesRec(node: string) {
+    this.graph.forEachOutEdge(node, (_edge, _attr, _source, target) => {
+      this.removeNodesRec(target)
+    })
+    if (node !== Board.STARTING_POSITION) {
+      this.graph.dropNode(node)
+    }
   }
 
   draw() {
@@ -123,5 +137,6 @@ export default class Graph extends Observable {
       }
     }
     generate([fen], 0, fen)
+    console.log(this.graph)
   }
 }
