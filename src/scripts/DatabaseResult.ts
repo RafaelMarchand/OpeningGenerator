@@ -1,32 +1,11 @@
 import { Chess } from "chess.js"
 import { Options } from "../Generator"
 
-export type Color = "black" | "white"
-
-export type MovesDatabase = {
-  white: number
-  black: number
-  draws: number
-  moves: [Move]
-}
-
-export type Move = {
-  uci: string
-  san: string
-  averageRaiting: number
-  white: number
-  black: number
-  draws: number
-  winningChances: number
-  popularity: number
-  weigth: number
-}
-
 export default class DatabaseResult {
-  movesDatabase: MovesDatabase
+  movesDatabase: DataBaseResult
   gameCount: number
 
-  constructor(movesDatabase: MovesDatabase) {
+  constructor(movesDatabase: DataBaseResult) {
     this.movesDatabase = movesDatabase
     this.gameCount = this.movesDatabase.black + this.movesDatabase.white + this.movesDatabase.draws
   }
@@ -46,7 +25,7 @@ export default class DatabaseResult {
     if (options.color === colorToMove) {
       moves.push(this.getRepertoireMove(options.randomness, options.rareRepertoire, options.color))
     } else {
-      moves = this.getOpponentMoves(options)
+      moves = this.getOpponentMoves(colorToMove)
     }
 
     return moves.map((move) => {
@@ -57,8 +36,8 @@ export default class DatabaseResult {
     })
   }
 
-  getOpponentMoves(options: Options): Move[] {
-    this.setWinningChances(options.color)
+  getOpponentMoves(color: Color): Move[] {
+    this.setWinningChances(color)
     const candidateMoves = this.candidateMovesOpponent()
     if (candidateMoves.length === 0) {
       throw new Error("unknown Position")

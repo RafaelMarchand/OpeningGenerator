@@ -4,6 +4,7 @@ import Graph, { NodePosition } from "./Graph"
 import * as cg from "chessground/types"
 import { Options } from "../Generator"
 import Observable from "./Observable"
+import { Result, nextMoves } from "./utils"
 
 const MOUSE_LEFT = 0
 const MOUSE_RIGHT = 2
@@ -23,15 +24,13 @@ export default class Mediator extends Observable {
   }
 
   setUpListeners() {
-    this.board.listen("boardMove", (orig: cg.Key, dest: cg.Key) => {
-      const lastPosition = this.board.getPosition()
-      this.board.move(orig, dest)
-      const position = this.board.getPosition()
-      this.graph.update(position, lastPosition)
+    this.board.listen("boardMove", (move: string, fen: string, prevFen: string) => {
+      this.graph.addMove(move, fen, prevFen)
     })
     this.graph.listen("nodeClick", (fen: string, position: NodePosition, event: MouseEvent) => {
       if (event.button === MOUSE_LEFT) {
         this.board.setPosition(fen)
+        this.graph.update(fen)
       } else if (event.button === MOUSE_RIGHT) {
         this.notify("mouseEvent", fen, position, event.type)
       }
@@ -39,17 +38,28 @@ export default class Mediator extends Observable {
     this.graph.listen("nodeHover", (fen: string, position: NodePosition, event: MouseEvent) => {
       this.notify("mouseEvent", fen, position, event.type)
     })
+    this.graph.listen("positionChange", (moves: string[]) => {
+      this.notify("positionChange", moves)
+    })
   }
 
   generate(options: Options) {
-    this.graph.generateOpening(this.board.getPosition(), options)
-  }
+    const fen = this.board.getPosition()
 
-  boardMove(orig: cg.Key, dest: cg.Key) {
-    const lastPosition = this.board.getPosition()
-    this.board.move(orig, dest)
-    const position = this.board.getPosition()
-    this.graph.update(position, lastPosition)
+    const generate = (results: Result[], depth: number, prevFen: string) => {
+      for (const result of results) {
+        if (result.move !== "") {
+          this.graph.addMove(result.move, result.fen, prevFen)
+        }
+        nextMoves(result.fen, options).then((nextPositions) => {
+          if (depth < options.depth) {
+            generate(nextPositions, depth + 1, result.fen)
+          }
+        })
+      }
+    }
+
+    generate([{ fen: fen, move: "" }], 0, fen)
   }
 
   removePosition(fen: string) {

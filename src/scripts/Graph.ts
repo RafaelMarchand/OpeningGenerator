@@ -3,12 +3,19 @@ import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
 //import GraphDrawer from "graph-drawer"
 import Graphology from "graphology"
 import Board from "./Board.js"
-import { nextMoves } from "./utils.js"
+import { Result, nextMoves } from "./utils.js"
 import { Options } from "../Generator"
 import Observable from "./Observable.js"
+import { Move } from "./lichessAPI.js"
+import { Chess } from "chess.js"
 
 type NodeAttributes = {
   value: number
+  moves: Move[]
+}
+
+type EdgeAttributes = {
+  move: string
 }
 
 type GraphAttributes = {
@@ -58,7 +65,7 @@ const GRAPH_METHODS: GraphMethods = {
 }
 
 export default class Graph extends Observable {
-  graph: Graphology<NodeAttributes, GraphAttributes>
+  graph: Graphology<NodeAttributes, EdgeAttributes, GraphAttributes>
   rootNodes: [string]
   graphDrawer: GraphDrawer
 
@@ -83,16 +90,17 @@ export default class Graph extends Observable {
     this.graph.mergeNode(fen)
   }
 
-  addEdge(fen: string, prevFen: string) {
+  addEdge(move: string, fen: string, prevFen: string) {
     if (fen !== prevFen) {
-      this.graph.mergeEdge(prevFen, fen)
+      this.graph.mergeEdge(prevFen, fen, { move: move })
     }
   }
 
-  update(fen: string, prevFen: string) {
+  addMove(move: string, fen: string, prevFen: string): string {
     this.addNode(fen)
-    this.addEdge(fen, prevFen)
-    this.draw()
+    this.addEdge(move, fen, prevFen)
+    this.update(fen)
+    return fen
   }
 
   removeNode(fen: string): string {
@@ -101,7 +109,7 @@ export default class Graph extends Observable {
       parentNode = source
     })
     this.removeNodesRec(fen)
-    this.draw()
+    this.update(parentNode)
     return parentNode
   }
 
@@ -118,25 +126,12 @@ export default class Graph extends Observable {
     this.graphDrawer.drawGraph(this.graph, this.rootNodes)
   }
 
-  setActiveNode(fen: string) {
-    //this.graph.setAttribute("focus", fen)
+  update(fen: string) {
+    const moves = this.graph.mapOutEdges(fen, (_edge, attributes) => {
+      return attributes.move
+    })
+    this.notify("positionChange", moves)
+    this.graph.setAttribute("focus", fen)
     this.draw()
-  }
-
-  generateOpening(fen: string, options: Options) {
-    console.log(options)
-    const generate = (fens: string[], depth: number, prevFen: string) => {
-      for (const fen of fens) {
-        this.update(fen, prevFen)
-
-        nextMoves(fen, options).then((nextPositions) => {
-          if (depth < options.depth) {
-            generate(nextPositions, depth + 1, fen)
-          }
-        })
-      }
-    }
-    generate([fen], 0, fen)
-    console.log(this.graph)
   }
 }

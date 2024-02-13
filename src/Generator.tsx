@@ -78,7 +78,7 @@ export default function Generator({ mediator }: Props) {
         Depth
       </Typography>
       <Select
-        defaultValue={0}
+        defaultValue={DEFAULT_OPTIONS.depth}
         color="primary"
         variant="outlined"
         onChange={(_event: SyntheticEvent | null, value: number | null) => {
@@ -95,7 +95,7 @@ export default function Generator({ mediator }: Props) {
         Max line spread
       </Typography>
       <Select
-        defaultValue={0}
+        defaultValue={DEFAULT_OPTIONS.maxLineSpread}
         color="primary"
         variant="outlined"
         onChange={(_event: SyntheticEvent | null, value: number | null) => {
