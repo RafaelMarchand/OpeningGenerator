@@ -19,6 +19,8 @@ type GraphAttributes = {
   focus: string
 }
 
+export type GraphType = Graphology<NodeAttributes, EdgeAttributes, GraphAttributes>
+
 export type NodePosition = {
   x: number
   y: number
@@ -63,7 +65,7 @@ const GRAPH_METHODS: GraphMethods = {
 }
 
 export default class Graph extends Observable {
-  graph: Graphology<NodeAttributes, EdgeAttributes, GraphAttributes>
+  graph: GraphType
   rootNodes: [string]
   graphDrawer: GraphDrawer
 

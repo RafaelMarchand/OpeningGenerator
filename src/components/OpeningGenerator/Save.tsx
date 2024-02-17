@@ -2,9 +2,11 @@ import { Button, Input, Stack, Typography } from "@mui/joy"
 import { useContext, useState } from "react"
 import { SelectChangeEvent } from "@mui/material"
 import { MediatorContext } from "./OpeningGenerator"
+import useSaveOpening from "../../scripts/useSaveOpening"
 
 export default function Save() {
   const mediator = useContext(MediatorContext)
+  const [saveOpening] = useSaveOpening()
   const [name, setName] = useState<string>("")
 
   function handleInput(event: SelectChangeEvent) {
@@ -12,7 +14,7 @@ export default function Save() {
   }
 
   function handleClick() {
-    mediator?.saveOpening(name)
+    saveOpening(name, mediator!.graph.graph)
     setName("")
   }
 

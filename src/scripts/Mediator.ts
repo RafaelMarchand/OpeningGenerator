@@ -69,8 +69,4 @@ export default class Mediator extends Observable {
     this.board.setPosition(fen)
     this.graph.update(fen)
   }
-
-  saveOpening(name: string) {
-    console.log(name)
-  }
 }

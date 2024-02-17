@@ -2,6 +2,7 @@ import { Stack } from "@mui/joy"
 import { Route, Routes } from "react-router-dom"
 import Navigation from "./components/Navigation"
 import OpeningGenerator from "./components/OpeningGenerator/OpeningGenerator"
+import Openings from "./components/Openings"
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       <Navigation></Navigation>
       <Routes>
         <Route path="/" element={<OpeningGenerator />} />
-        <Route path="/openings" element={<div>hi</div>} />
+        <Route path="/openings" element={<Openings />} />
       </Routes>
     </Stack>
   )
