@@ -1,13 +1,13 @@
 import Chessground from "@react-chess/chessground"
-import { RefObject, useEffect, useReducer } from "react"
-import Mediator from "./scripts/Mediator"
+import { RefObject, useContext, useEffect, useReducer, useRef } from "react"
+import Mediator from "../../scripts/Mediator"
 import { Button } from "@mui/joy"
-import { NodePosition as Position } from "./scripts/Graph"
-import Board from "./scripts/Board"
-import DelayHandler from "./scripts/DelayHandler"
+import { NodePosition as Position } from "../../scripts/Graph"
+import Board from "../../scripts/Board"
+import DelayHandler from "../../scripts/DelayHandler"
+import { MediatorContext } from "./OpeningGenerator"
 
 interface Props {
-  mediator: Mediator
   graphRef: RefObject<HTMLDivElement>
 }
 
@@ -82,7 +82,8 @@ function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): P
 
 const buttonDelayHandler = new DelayHandler()
 
-export default function GraphPopUps({ mediator, graphRef }: Props) {
+export default function GraphPopUps({ graphRef }: Props) {
+  const mediator = useContext(MediatorContext)
   const [state, dispatch] = useReducer(reducer, DEFAULT_GRAPH_POPUPS)
   const popUpPosition = getPosition(state.position, graphRef)
   const config = {
@@ -107,8 +108,8 @@ export default function GraphPopUps({ mediator, graphRef }: Props) {
   }
 
   useEffect(() => {
-    mediator.listen("mouseEvent", mouseHandler)
-  }, [])
+    mediator?.listen("mouseEvent", mouseHandler)
+  }, [mediator])
 
   return (
     <>

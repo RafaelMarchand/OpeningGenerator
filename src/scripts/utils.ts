@@ -1,8 +1,8 @@
 import { Chess } from "chess.js"
-import { Options } from "../Generator"
+import { Options } from "../components/OpeningGenerator/Configuration"
 import { DataBaseResult, Move, movesPlayers } from "./lichessAPI"
 
-type Color = "black" | "white"
+export type Color = "black" | "white"
 
 export type Result = {
   fen: string
@@ -87,7 +87,7 @@ function createMapToResults(position: string): (moves: Move[]) => Result[] {
       chess.move(move.uci)
       return {
         fen: chess.fen(),
-        move: move.uci
+        move: move.san
       }
     })
   }

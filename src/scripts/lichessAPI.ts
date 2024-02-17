@@ -57,6 +57,6 @@ export async function movesPlayers(position: string, range: number[]): Promise<D
   const result = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`)
     .then((response) => response.json())
     .catch((error) => console.log(error))
-  console.log(result)
+  //console.log(result)
   return result
 }

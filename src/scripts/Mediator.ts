@@ -1,8 +1,7 @@
 import { RefObject } from "react"
 import Board from "./Board"
 import Graph, { NodePosition } from "./Graph"
-import * as cg from "chessground/types"
-import { Options } from "../Generator"
+import { Options } from "../components/OpeningGenerator/Configuration"
 import Observable from "./Observable"
 import { Result, nextMoves } from "./utils"
 
@@ -29,8 +28,7 @@ export default class Mediator extends Observable {
     })
     this.graph.listen("nodeClick", (fen: string, position: NodePosition, event: MouseEvent) => {
       if (event.button === MOUSE_LEFT) {
-        this.board.setPosition(fen)
-        this.graph.update(fen)
+        this.setPosition(fen)
       } else if (event.button === MOUSE_RIGHT) {
         this.notify("mouseEvent", fen, position, event.type)
       }
@@ -65,5 +63,14 @@ export default class Mediator extends Observable {
   removePosition(fen: string) {
     const parentNode = this.graph.removeNode(fen)
     this.board.setPosition(parentNode)
+  }
+
+  setPosition(fen: string) {
+    this.board.setPosition(fen)
+    this.graph.update(fen)
+  }
+
+  saveOpening(name: string) {
+    console.log(name)
   }
 }

@@ -12,13 +12,17 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.10",
     "@mui/joy": "^5.0.0-beta.24",
+    "@mui/material": "^5.15.10",
     "@react-chess/chessground": "^1.3.4",
     "chess.js": "^1.0.0-beta.7",
     "chessground": "^9.0.4",
     "graphology": "^0.25.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-resizable": "^3.0.5",
+    "react-router-dom": "^6.22.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

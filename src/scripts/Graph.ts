@@ -3,11 +3,8 @@ import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
 //import GraphDrawer from "graph-drawer"
 import Graphology from "graphology"
 import Board from "./Board.js"
-import { Result, nextMoves } from "./utils.js"
-import { Options } from "../Generator"
 import Observable from "./Observable.js"
 import { Move } from "./lichessAPI.js"
-import { Chess } from "chess.js"
 
 type NodeAttributes = {
   value: number
@@ -42,6 +39,7 @@ const GRAPH_DRAWR_OPTIONS = {
   nodeRadiusHover: 10,
   nodeRadiusFocus: 10,
   style: {
+    borderRadius: "0.3rem",
     backgroundColor: "black",
     nodeBorder: "white",
     edgeWidth: 5, // first hsl value to determine color
@@ -127,8 +125,8 @@ export default class Graph extends Observable {
   }
 
   update(fen: string) {
-    const moves = this.graph.mapOutEdges(fen, (_edge, attributes) => {
-      return attributes.move
+    const moves = this.graph.mapOutEdges(fen, (_edge, attributes, _source, target) => {
+      return { move: attributes.move, fen: target }
     })
     this.notify("positionChange", moves)
     this.graph.setAttribute("focus", fen)

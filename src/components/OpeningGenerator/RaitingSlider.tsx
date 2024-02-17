@@ -1,6 +1,6 @@
 import { Box, Slider, Typography } from "@mui/joy"
 import { Dispatch, useState } from "react"
-import { DEFAULT_OPTIONS, DispatchParams, RAITING_RANGES, reducerAction } from "./Generator"
+import { DEFAULT_OPTIONS, DispatchParams, RAITING_RANGES, reducerAction } from "./Configuration"
 
 const RATITNG_LABELS = [0, 1000, 1600, 2000, 2500, 3000]
 

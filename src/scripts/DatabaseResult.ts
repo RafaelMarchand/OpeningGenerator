@@ -1,5 +1,5 @@
 import { Chess } from "chess.js"
-import { Options } from "../Generator"
+import { Options } from "../components/OpeningGenerator/Configuration"
 
 export default class DatabaseResult {
   movesDatabase: DataBaseResult

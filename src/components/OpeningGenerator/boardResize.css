@@ -1,0 +1,6 @@
+.hover-handles .react-resizable-handle {
+  display: none;
+}
+.hover-handles:hover .react-resizable-handle {
+  display: block;
+}

@@ -1,12 +1,8 @@
-import { Button, Select, Stack, Switch, Typography, Option } from "@mui/joy"
-import { RefObject, SyntheticEvent, useReducer } from "react"
-import Mediator from "./scripts/Mediator"
+import { Button, Select, Stack, Switch, Typography, Option, Input } from "@mui/joy"
+import { SyntheticEvent, useContext, useReducer } from "react"
 import RaitingSlider from "./RaitingSlider"
-import { Color } from "./scripts/DatabaseResult"
-
-interface Props {
-  mediator: Mediator | null
-}
+import { Color } from "../../scripts/utils"
+import { MediatorContext } from "./OpeningGenerator"
 
 export type Options = {
   color: Color
@@ -52,7 +48,8 @@ function reducer(state: Options, action: DispatchParams): Options {
   }
 }
 
-export default function Generator({ mediator }: Props) {
+export default function Configuration() {
+  const mediator = useContext(MediatorContext)
   const [options, dispatchOptions] = useReducer(reducer, DEFAULT_OPTIONS)
 
   function onClickGenerate() {
@@ -60,8 +57,16 @@ export default function Generator({ mediator }: Props) {
   }
 
   return (
-    <Stack direction="column" justifyContent="space-evenly" alignItems="stretcht" spacing={2}>
-      <Typography color="primary" level="h4">
+    <Stack
+      direction="column"
+      justifyContent="space-evenly"
+      alignItems="stretcht"
+      spacing={2}
+      sx={{ backgroundColor: "background.level2", p: 2, borderRadius: "0.3rem" }}>
+      <Typography color="neutral" level="h3">
+        Configuration
+      </Typography>
+      <Typography color="primary" level="title-lg">
         Color
       </Typography>
       <Select
@@ -74,7 +79,7 @@ export default function Generator({ mediator }: Props) {
         <Option value="w">white</Option>
         <Option value="b">black</Option>
       </Select>
-      <Typography color="primary" level="h4">
+      <Typography color="primary" level="title-lg">
         Depth
       </Typography>
       <Select
@@ -91,7 +96,7 @@ export default function Generator({ mediator }: Props) {
         <Option value={4}>4</Option>
         <Option value={5}>5</Option>
       </Select>
-      <Typography color="primary" level="h4">
+      <Typography color="primary" level="title-lg">
         Max line spread
       </Typography>
       <Select
@@ -112,7 +117,7 @@ export default function Generator({ mediator }: Props) {
       <RaitingSlider text="Raiting Opponents" dispatchOptions={dispatchOptions} action={"rangeOpponent"} />
       <RaitingSlider text="Raiting Repetoir" dispatchOptions={dispatchOptions} action={"rangeOpeningMoves"} />
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
-        <Typography color="primary" level="h4">
+        <Typography color="primary" level="title-lg">
           Rare Repertoire
         </Typography>
         <Switch
@@ -124,7 +129,7 @@ export default function Generator({ mediator }: Props) {
         />
       </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
-        <Typography color="primary" level="h4">
+        <Typography color="primary" level="title-lg">
           Randomness
         </Typography>
         <Switch

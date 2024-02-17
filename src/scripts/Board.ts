@@ -20,11 +20,7 @@ export default class Board extends Observable {
       fen: Board.STARTING_POSITION,
       events: {
         move: (orig: cg.Key, dest: cg.Key) => {
-          const newPosition = this.validateMove(orig + dest)
-          if (newPosition !== this.getPosition()) {
-            this.notify("boardMove", orig + dest, newPosition, this.getPosition())
-            this.setPosition(newPosition)
-          }
+          this.handleMove(orig + dest)
         }
       }
     }
@@ -40,15 +36,23 @@ export default class Board extends Observable {
     return this.config.fen!
   }
 
-  validateMove(move: string): string {
+  validateMove(move: string): string[] {
     const currentPosition = this.getPosition()
     try {
       const chess = new Chess()
       chess.load(currentPosition)
-      chess.move(move)
-      return chess.fen()
+      const { san } = chess.move(move)
+      return [chess.fen(), san]
     } catch (error) {
-      return currentPosition
+      return [currentPosition, move]
     }
+  }
+
+  handleMove(move: string) {
+    const [position, san] = this.validateMove(move)
+    if (position !== this.getPosition()) {
+      this.notify("boardMove", san, position, this.getPosition())
+    }
+    this.setPosition(position)
   }
 }
