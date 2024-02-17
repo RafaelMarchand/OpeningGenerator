@@ -7,6 +7,7 @@ import GraphPopUps from "./GraphPopUps"
 import NextMoves from "./NextMoves"
 import Settings from "./Settings"
 import Board from "./Board"
+import Information from "./Information"
 
 export const MediatorContext = createContext<Mediator | null>(null)
 
@@ -36,7 +37,7 @@ function OpeningGenerator() {
           sx={{ overflow: "auto", maxHeight: "100%" }}>
           <Stack direction="row" justifyContent="space-evenly" spacing={2} sx={{ width: "100%" }}>
             <Board boardRef={boardRef} />
-            <NextMoves />
+            <Information />
           </Stack>
           <Box>
             <Box ref={graphRef} />
