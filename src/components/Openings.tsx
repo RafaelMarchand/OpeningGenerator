@@ -1,24 +1,12 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  Stack,
-  ToggleButtonGroup,
-  Typography
-} from "@mui/joy"
+import { Button, IconButton, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
 import useSaveOpening, { OpeningData } from "../scripts/useSaveOpening"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { Delete, Edit } from "@mui/icons-material"
-import Save from "./OpeningGenerator/Save"
 import { MediatorContext } from "./OpeningGenerator/OpeningGenerator"
 
 export default function Openings() {
   const mediator = useContext(MediatorContext)
   const [openings, dispatch] = useSaveOpening()
-  const [selected, setSelected] = useState<number>(0)
 
   function handleClick(opening: OpeningData) {
     mediator?.action("loadOpening", opening)

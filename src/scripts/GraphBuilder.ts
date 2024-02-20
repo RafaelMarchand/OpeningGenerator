@@ -70,12 +70,4 @@ export default class GraphBuilder {
     })
     return moves
   }
-
-  loadGraph(graph: GraphType): string {
-    console.log(graph)
-    this.graph = new Graphology({ type: "directed" }).import(graph) as GraphType
-    //this.draw()
-    this.notify("graphChange", this.graph)
-    return this.graph.getAttribute("focus")
-  }
 }

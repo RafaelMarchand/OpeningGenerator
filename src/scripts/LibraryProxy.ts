@@ -2,7 +2,6 @@ import Graphology from "graphology"
 import Proxy from "./Proxy.js"
 import { GraphType } from "./GraphBuilder.js"
 import { NodePosition } from "./Graph.js"
-import Board from "./Board.js"
 
 const MOUSE_LEFT = 0
 

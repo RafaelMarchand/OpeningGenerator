@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { GraphType } from "./UIElements"
+import { GraphType } from "./GraphBuilder"
 
 export type OpeningData = {
   name: string

@@ -1,14 +1,17 @@
 import Chessground from "@react-chess/chessground"
-import { RefObject, useContext, useEffect, useReducer, useRef } from "react"
-import Mediator from "../../scripts/Mediator"
+import { RefObject, useContext, useEffect, useReducer } from "react"
 import { Button } from "@mui/joy"
-import { NodePosition as Position } from "../../scripts/UIElements"
 import Board from "../../scripts/Board"
 import DelayHandler from "../../scripts/DelayHandler"
 import { MediatorContext } from "./OpeningGenerator"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
+}
+
+type Position = {
+  x: number
+  y: number
 }
 
 export interface DispatchGraphPopUp {

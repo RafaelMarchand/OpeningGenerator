@@ -16,7 +16,7 @@ export default function Save() {
   function handleClick() {
     const opening = {
       name: name,
-      graph: mediator!.proxy.graphBuilder.graph.export(),
+      graph: mediator!.proxy.graphBuilder.graph,
       index: openings.length === 0 ? 0 : openings.length,
       edit: false
     }

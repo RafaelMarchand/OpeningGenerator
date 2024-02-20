@@ -1,7 +1,6 @@
 import Board from "./Board"
-import Graph, { NodePosition } from "./Graph"
-import GraphBuilder, { GraphType } from "./GraphBuilder"
-import { Ref } from "./Mediator"
+import { NodePosition } from "./Graph"
+import GraphBuilder from "./GraphBuilder"
 import Observable from "./Observable"
 
 export default class Proxy extends Observable {
