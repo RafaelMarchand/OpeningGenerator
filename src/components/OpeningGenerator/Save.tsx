@@ -6,7 +6,7 @@ import useSaveOpening from "../../scripts/useSaveOpening"
 
 export default function Save() {
   const mediator = useContext(MediatorContext)
-  const [saveOpening] = useSaveOpening()
+  const [openings, reducer] = useSaveOpening()
   const [name, setName] = useState<string>("")
 
   function handleInput(event: SelectChangeEvent) {
@@ -14,19 +14,20 @@ export default function Save() {
   }
 
   function handleClick() {
-    saveOpening(name, mediator!.graph.graph)
+    const opening = {
+      name: name,
+      graph: mediator!.proxy.graphBuilder.graph.export(),
+      index: openings.length === 0 ? 0 : openings.length,
+      edit: false
+    }
+    reducer("save", opening)
     setName("")
   }
 
   return (
-    <Stack
-      direction="column"
-      justifyContent="space-evenly"
-      alignItems="stretcht"
-      spacing={2}
-      sx={{ backgroundColor: "background.level2", p: 2, borderRadius: "0.3rem" }}>
-      <Typography color="neutral" level="h3">
-        Save
+    <Stack direction="column" justifyContent="space-evenly" alignItems="stretcht" spacing={2} sx={{}}>
+      <Typography color="primary" level="title-lg">
+        Save to Library
       </Typography>
       <Input
         value={name}

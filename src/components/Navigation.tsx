@@ -1,4 +1,4 @@
-import { Home, Save } from "@mui/icons-material"
+import { Home, Save, LibraryBooks } from "@mui/icons-material"
 import { Box, List, ListItem, ListItemButton, ListItemDecorator } from "@mui/joy"
 import { useState } from "react"
 import { Link } from "react-router-dom"
@@ -38,9 +38,9 @@ export default function Navigation() {
             to={"/openings"}>
             <ListItemButton selected={selected === 1} onClick={() => setSelected(1)}>
               <ListItemDecorator>
-                <Save />
+                <LibraryBooks />
               </ListItemDecorator>
-              Openings
+              Library
             </ListItemButton>
           </Link>
         </ListItem>

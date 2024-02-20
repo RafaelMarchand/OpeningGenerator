@@ -1,72 +1,65 @@
 import { RefObject } from "react"
 import Board from "./Board"
-import Graph, { NodePosition } from "./Graph"
 import { Options } from "../components/OpeningGenerator/Configuration"
 import Observable from "./Observable"
 import { Result, nextMoves } from "./utils"
+import { OpeningData } from "./useSaveOpening"
+import { GraphType } from "./GraphBuilder"
+import Graph, { NodePosition } from "./Graph"
+import GeneratorProxy from "./GeneratorProxy"
+import LibraryProxy from "./LibraryProxy"
+import { ProxyIdentifier } from "../components/OpeningGenerator/ViewToggler"
+import Proxy from "./Proxy"
 
-const MOUSE_LEFT = 0
-const MOUSE_RIGHT = 2
-
-type Ref = RefObject<HTMLDivElement>
+export type Ref = RefObject<HTMLDivElement>
 
 export default class Mediator extends Observable {
   board: Board
   graph: Graph
+  proxies: Proxy[]
+  proxy: Proxy
 
   constructor(boardRef: Ref, graphRef: Ref) {
     super()
     this.board = new Board(boardRef)
     this.graph = new Graph(graphRef)
+    this.proxies = [new GeneratorProxy(), new LibraryProxy()]
+    this.proxy = this.proxies[0]
 
     this.setUpListeners()
   }
 
   setUpListeners() {
     this.board.listen("boardMove", (move: string, fen: string, prevFen: string) => {
-      this.graph.addMove(move, fen, prevFen)
+      this.proxy.boardMove(move, fen, prevFen)
     })
+
     this.graph.listen("nodeClick", (fen: string, position: NodePosition, event: MouseEvent) => {
-      if (event.button === MOUSE_LEFT) {
-        this.setPosition(fen)
-      } else if (event.button === MOUSE_RIGHT) {
-        this.notify("mouseEvent", fen, position, event.type)
-      }
+      this.proxy.nodeClick(fen, position, event)
     })
+
     this.graph.listen("nodeHover", (fen: string, position: NodePosition, event: MouseEvent) => {
-      this.notify("mouseEvent", fen, position, event.type)
+      this.proxy.nodeHover(fen, position, event)
     })
-    this.graph.listen("positionChange", (moves: string[]) => {
-      this.notify("positionChange", moves)
+
+    this.proxies.forEach((proxy: Proxy) => {
+      proxy.listen("setState", (fen: string, graph: GraphType) => {
+        this.board.setPosition(fen)
+        this.graph.draw(graph)
+      })
     })
   }
 
-  generate(options: Options) {
-    const fen = this.board.getPosition()
-
-    const generate = (results: Result[], depth: number, prevFen: string) => {
-      for (const result of results) {
-        if (result.move !== "") {
-          this.graph.addMove(result.move, result.fen, prevFen)
-        }
-        nextMoves(result.fen, options).then((nextPositions) => {
-          if (depth < options.depth) {
-            generate(nextPositions, depth + 1, result.fen)
-          }
-        })
-      }
+  switchProxy(identifier: ProxyIdentifier) {
+    if (identifier === "generator") {
+      this.proxy = this.proxies[0]
+    } else {
+      this.proxy = this.proxies[1]
     }
-
-    generate([{ fen: fen, move: "" }], 0, fen)
+    this.proxy.updateUI()
   }
 
-  removePosition(fen: string) {
-    const parentNode = this.graph.removeNode(fen)
-    this.board.setPosition(parentNode)
-  }
-
-  setPosition(fen: string) {
-    this.board.setPosition(fen)
-    this.graph.update(fen)
+  action(action: any, payload: any) {
+    this.proxy.action(action, payload)
   }
 }

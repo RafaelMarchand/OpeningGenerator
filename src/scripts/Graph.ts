@@ -4,22 +4,7 @@ import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
 import Graphology from "graphology"
 import Board from "./Board.js"
 import Observable from "./Observable.js"
-import { Move } from "./lichessAPI.js"
-
-type NodeAttributes = {
-  value: number
-  moves: Move[]
-}
-
-type EdgeAttributes = {
-  move: string
-}
-
-type GraphAttributes = {
-  focus: string
-}
-
-export type GraphType = Graphology<NodeAttributes, EdgeAttributes, GraphAttributes>
+import { GraphType } from "./GraphBuilder.js"
 
 export type NodePosition = {
   x: number
@@ -56,23 +41,17 @@ const GRAPH_METHODS: GraphMethods = {
   getOutEdgesKeys: (graph: Graphology, nodeKey: string) => graph.mapOutEdges(nodeKey, (edge: any) => edge),
   getDestNodeKey: (graph: Graphology, edgeKey: string) => graph.target(edgeKey),
   getNodeValue: (graph: Graphology, nodeKey: string) => 0,
-  getNodeFocus: (graph: Graphology, nodeKey: string) => {
-    if (nodeKey === graph.getAttribute("focus")) {
-      return true
-    }
-    return false
-  }
+  getNodeFocus: (graph: Graphology, nodeKey: string) => nodeKey === graph.getAttribute("focus")
 }
 
 export default class Graph extends Observable {
-  graph: GraphType
-  rootNodes: [string]
+  static instance: Graph | null = null
   graphDrawer: GraphDrawer
 
   constructor(ref: RefObject<HTMLDivElement>) {
+    if (Graph.instance) return Graph.instance
     super()
-    this.graph = new Graphology({ type: "directed" })
-    this.rootNodes = [Board.STARTING_POSITION]
+    Graph.instance = this
     this.graphDrawer = new GraphDrawer(
       GRAPH_METHODS,
       ref.current,
@@ -82,56 +61,9 @@ export default class Graph extends Observable {
       (key: string, nodePosition: NodePosition, event: MouseEvent) =>
         this.notify("nodeHover", key, nodePosition, event)
     )
-
-    this.graph.addNode(Board.STARTING_POSITION)
   }
 
-  addNode(fen: string) {
-    this.graph.mergeNode(fen)
-  }
-
-  addEdge(move: string, fen: string, prevFen: string) {
-    if (fen !== prevFen) {
-      this.graph.mergeEdge(prevFen, fen, { move: move })
-    }
-  }
-
-  addMove(move: string, fen: string, prevFen: string): string {
-    this.addNode(fen)
-    this.addEdge(move, fen, prevFen)
-    this.update(fen)
-    return fen
-  }
-
-  removeNode(fen: string): string {
-    let parentNode = Board.STARTING_POSITION
-    this.graph.forEachInEdge(fen, (_edge, _attr, source) => {
-      parentNode = source
-    })
-    this.removeNodesRec(fen)
-    this.update(parentNode)
-    return parentNode
-  }
-
-  removeNodesRec(node: string) {
-    this.graph.forEachOutEdge(node, (_edge, _attr, _source, target) => {
-      this.removeNodesRec(target)
-    })
-    if (node !== Board.STARTING_POSITION) {
-      this.graph.dropNode(node)
-    }
-  }
-
-  draw() {
-    this.graphDrawer.drawGraph(this.graph, this.rootNodes)
-  }
-
-  update(fen: string) {
-    const moves = this.graph.mapOutEdges(fen, (_edge, attributes, _source, target) => {
-      return { move: attributes.move, fen: target }
-    })
-    this.notify("positionChange", moves)
-    this.graph.setAttribute("focus", fen)
-    this.draw()
+  draw(graph: GraphType, rootNodes: string[] = [Board.STARTING_POSITION]) {
+    this.graphDrawer.drawGraph(graph, rootNodes)
   }
 }

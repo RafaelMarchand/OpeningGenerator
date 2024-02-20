@@ -1,11 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { Box, Button, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
 import { MediatorContext } from "./OpeningGenerator"
-
-type MoveData = {
-  move: string
-  fen: string
-}
+import { MoveData } from "../../scripts/GraphBuilder"
 
 export default function NextMoves() {
   const mediator = useContext(MediatorContext)

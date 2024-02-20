@@ -28,7 +28,7 @@ function OpeningGenerator() {
         justifyContent="flex-start"
         alignItems="flex-start"
         spacing={2}
-        sx={{ pt: 2, height: "100vh" }}>
+        sx={{ pt: 2, height: "100vh", width: "100rem" }}>
         <Stack
           direction="column"
           justifyContent="flex-start"
