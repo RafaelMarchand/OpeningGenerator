@@ -1,16 +1,18 @@
 import { Button, IconButton, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
-import useSaveOpening, { OpeningData } from "../scripts/useSaveOpening"
-import { useContext } from "react"
+import useSaveOpening, { OpeningData } from "../../common/useSaveOpening"
 import { Delete, Edit } from "@mui/icons-material"
-import { MediatorContext } from "./OpeningGenerator/OpeningGenerator"
+import Mediator from "../../common/Mediator"
+import { DispatchController } from "./Controls"
+import { Dispatch } from "react"
 
-export default function Openings() {
-  const mediator = useContext(MediatorContext)
-  const [openings, dispatch] = useSaveOpening()
+interface Props {
+  dispatch: Dispatch<DispatchController>
+}
 
-  function handleClick(opening: OpeningData) {
-    mediator?.action("loadOpening", opening)
-  }
+const mediator = new Mediator()
+
+export default function Openings({ dispatch }: Props) {
+  const [openings, dispatchOpening] = useSaveOpening()
 
   return (
     <Stack
@@ -35,10 +37,16 @@ export default function Openings() {
               value="default"
               fullWidth
               sx={{ justifyContent: "flex-start" }}
-              onClick={() => handleClick(opening)}>
+              onClick={() => {
+                mediator.action("loadOpening", opening)
+              }}>
               {opening.name}
             </Button>
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                mediator.action("editOpening", opening)
+                dispatch({ type: "edit", payload: opening })
+              }}>
               <Edit />
             </IconButton>
             <IconButton
@@ -46,7 +54,7 @@ export default function Openings() {
               sx={{ borderColor: "neutral.outlinedBorder" }}
               color="danger"
               onClick={() => {
-                dispatch("remove", opening)
+                dispatchOpening("remove", opening)
               }}>
               <Delete />
             </IconButton>

@@ -1,9 +1,8 @@
-import { Button, Select, Stack, Switch, Typography, Option, Input, Divider } from "@mui/joy"
-import { SyntheticEvent, useContext, useReducer } from "react"
+import { Button, Select, Stack, Switch, Typography, Option, Divider } from "@mui/joy"
+import { SyntheticEvent, useReducer } from "react"
 import RaitingSlider from "./RaitingSlider"
-import { Color } from "../../scripts/utils"
-import { MediatorContext } from "./OpeningGenerator"
-import Save from "./Save"
+import { Color } from "../../common/utils"
+import Mediator from "../../common/Mediator"
 
 export type Options = {
   color: Color
@@ -50,12 +49,10 @@ function reducer(state: Options, action: DispatchParams): Options {
 }
 
 export default function Configuration() {
-  const mediator = useContext(MediatorContext)
   const [options, dispatchOptions] = useReducer(reducer, DEFAULT_OPTIONS)
 
   function onClickGenerate() {
-    //mediator?.generate(options)
-    mediator?.action("generate", options)
+    new Mediator().action("generate", options)
   }
 
   return (
@@ -69,7 +66,7 @@ export default function Configuration() {
         p: 2,
         borderBottomLeftRadius: "0.3rem",
         borderBottomRightRadius: "0.3rem",
-        height: "1000%"
+        height: "100%"
       }}>
       <Typography color="primary" level="title-lg">
         Color
@@ -148,8 +145,6 @@ export default function Configuration() {
       <Button disabled={false} onClick={onClickGenerate} size="lg">
         Generate Opening
       </Button>
-      <Divider />
-      <Save />
     </Stack>
   )
 }

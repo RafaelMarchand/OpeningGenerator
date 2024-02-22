@@ -1,9 +1,9 @@
 import Chessground from "@react-chess/chessground"
-import { RefObject, useContext, useEffect, useReducer } from "react"
+import { RefObject, useEffect, useReducer } from "react"
 import { Button } from "@mui/joy"
-import Board from "../../scripts/Board"
-import DelayHandler from "../../scripts/DelayHandler"
-import { MediatorContext } from "./OpeningGenerator"
+import Board from "../common/Board"
+import DelayHandler from "../common/DelayHandler"
+import Mediator from "../common/Mediator"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -86,7 +86,6 @@ function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): P
 const buttonDelayHandler = new DelayHandler()
 
 export default function GraphPopUps({ graphRef }: Props) {
-  const mediator = useContext(MediatorContext)
   const [state, dispatch] = useReducer(reducer, DEFAULT_GRAPH_POPUPS)
   const popUpPosition = getPosition(state.position, graphRef)
   const config = {
@@ -111,8 +110,8 @@ export default function GraphPopUps({ graphRef }: Props) {
   }
 
   useEffect(() => {
-    mediator?.proxy.listen("showPopUp", mouseHandler)
-  }, [mediator])
+    new Mediator().proxies.forEach((proxy) => proxy.listen("showPopUp", mouseHandler))
+  }, [])
 
   return (
     <>
@@ -136,7 +135,7 @@ export default function GraphPopUps({ graphRef }: Props) {
                 })
               }
               onClick={() => {
-                mediator?.action("removePosition", state.fen)
+                new Mediator().action("removePosition", state.fen)
                 dispatch({
                   type: "hideButton",
                   payload: {}

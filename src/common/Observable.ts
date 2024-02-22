@@ -10,6 +10,8 @@ export default class Observable {
   }
 
   listen(name: string, callback: any) {
+    const hasListener = this.observers.find((observer: Observer) => observer.name === name)
+    if (hasListener) return
     const listener = { name, callback }
     this.observers.push(listener)
   }

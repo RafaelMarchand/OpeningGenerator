@@ -65,8 +65,9 @@ export default class GraphBuilder {
   }
 
   getNextMoves(fen: string): MoveData[] {
-    const moves = this.graph.mapOutEdges(fen, (_edge, attributes, _source, target) => {
-      return { move: attributes.move, fen: target }
+    const moves: MoveData[] = []
+    this.graph.forEachOutEdge(fen, (_edge, attributes, _source, target) => {
+      moves.push({ move: attributes.move, fen: target })
     })
     return moves
   }

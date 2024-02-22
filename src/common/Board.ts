@@ -56,6 +56,5 @@ export default class Board extends Observable {
     if (position !== this.getPosition()) {
       this.notify("boardMove", san, position, this.getPosition())
     }
-    this.setPosition(position)
   }
 }

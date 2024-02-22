@@ -1,5 +1,5 @@
 import { Chess } from "chess.js"
-import { Options } from "../components/OpeningGenerator/Configuration"
+import { Options } from "../components/Controls/Configuration"
 import { DataBaseResult, Move, movesPlayers } from "./lichessAPI"
 
 export type Color = "black" | "white"

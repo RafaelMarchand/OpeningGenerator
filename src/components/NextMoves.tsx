@@ -1,19 +1,18 @@
-import { useContext, useEffect, useState } from "react"
-import { Box, Button, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
-import { MediatorContext } from "./OpeningGenerator"
-import { MoveData } from "../../scripts/GraphBuilder"
+import { useEffect, useState } from "react"
+import { Button, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
+import { MoveData } from "../common/GraphBuilder"
+import Mediator from "../common/Mediator"
 
 export default function NextMoves() {
-  const mediator = useContext(MediatorContext)
   const [moves, setMoves] = useState<MoveData[]>([])
   const [selected, setSelected] = useState<number>(0)
 
   useEffect(() => {
-    mediator?.listen("positionChange", (moves: MoveData[]) => {
+    new Mediator().listen("positionChange", (moves: MoveData[]) => {
       setMoves(moves)
       setSelected(0)
     })
-  }, [mediator])
+  }, [])
 
   return (
     <Stack
@@ -35,7 +34,7 @@ export default function NextMoves() {
               variant="soft"
               key={index}
               value={String(index)}
-              onClick={() => mediator!.setPosition(move.fen)}
+              onClick={() => new Mediator().proxy.playNextMove(move.fen)}
               onMouseOver={() => {
                 setSelected(index)
               }}>

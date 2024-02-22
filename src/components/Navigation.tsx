@@ -29,21 +29,6 @@ export default function Navigation() {
             </ListItemButton>
           </Link>
         </ListItem>
-        <ListItem>
-          <Link
-            style={{
-              textDecoration: "none",
-              width: "100%"
-            }}
-            to={"/openings"}>
-            <ListItemButton selected={selected === 1} onClick={() => setSelected(1)}>
-              <ListItemDecorator>
-                <LibraryBooks />
-              </ListItemDecorator>
-              Library
-            </ListItemButton>
-          </Link>
-        </ListItem>
       </List>
     </Box>
   )

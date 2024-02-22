@@ -3,11 +3,11 @@ import Stack from "@mui/joy/Stack"
 import { ResizableBox } from "react-resizable"
 import { Box } from "@mui/joy"
 
-import "./boardResize.css"
-import "../../../node_modules/react-resizable/css/styles.css"
-import "../../assets/chessground.base.css"
-import "../../../node_modules/chessground/assets/chessground.brown.css"
-import "../../../node_modules/chessground/assets/chessground.cburnett.css"
+import "../assets/boardResize.css"
+import "../../node_modules/react-resizable/css/styles.css"
+import "../assets/chessground.base.css"
+import "../../node_modules/chessground/assets/chessground.brown.css"
+import "../../node_modules/chessground/assets/chessground.cburnett.css"
 
 interface Props {
   boardRef: RefObject<HTMLDivElement>

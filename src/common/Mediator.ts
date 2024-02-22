@@ -1,32 +1,37 @@
 import { RefObject } from "react"
 import Board from "./Board"
 import Observable from "./Observable"
-import { GraphType } from "./GraphBuilder"
+import { GraphType, MoveData } from "./GraphBuilder"
 import Graph, { NodePosition } from "./Graph"
 import GeneratorProxy from "./GeneratorProxy"
-import LibraryProxy from "./LibraryProxy"
-import { ProxyIdentifier } from "../components/OpeningGenerator/ViewToggler"
 import Proxy from "./Proxy"
+import LibraryProxy from "./LibraryProxy"
+import { OpeningData } from "./useSaveOpening"
 
 export type Ref = RefObject<HTMLDivElement>
+export type ProxyIdentifier = "generator" | "library"
 
 export default class Mediator extends Observable {
-  board: Board
-  graph: Graph
-  proxies: Proxy[]
-  proxy: Proxy
+  static instance: Mediator | null = null
+  board: Board | undefined
+  graph: Graph | undefined
+  proxies!: Proxy[]
+  proxy!: Proxy
 
-  constructor(boardRef: Ref, graphRef: Ref) {
+  constructor() {
+    if (Mediator.instance) return Mediator.instance
     super()
-    this.board = new Board(boardRef)
-    this.graph = new Graph(graphRef)
+    Mediator.instance = this
+    this.board = undefined
+    this.graph = undefined
     this.proxies = [new GeneratorProxy(), new LibraryProxy()]
     this.proxy = this.proxies[0]
-
-    this.setUpListeners()
   }
 
-  setUpListeners() {
+  initialize(boardRef: Ref, graphRef: Ref) {
+    this.board = new Board(boardRef)
+    this.graph = new Graph(graphRef)
+
     this.board.listen("boardMove", (move: string, fen: string, prevFen: string) => {
       this.proxy.boardMove(move, fen, prevFen)
     })
@@ -40,9 +45,19 @@ export default class Mediator extends Observable {
     })
 
     this.proxies.forEach((proxy: Proxy) => {
-      proxy.listen("setState", (fen: string, graph: GraphType) => {
-        this.board.setPosition(fen)
-        this.graph.draw(graph)
+      proxy.listen("setState", (fen: string, graph: GraphType, nextMoves: MoveData[]) => {
+        this.board!.setPosition(fen)
+        this.graph!.draw(graph)
+        this.notify("positionChange", nextMoves)
+      })
+    })
+
+    this.proxies.forEach((proxy: Proxy) => {
+      proxy.listen("editOpening", (opening: OpeningData) => {
+        this.switchProxy("generator")
+        this.proxy.loadOpening(opening)
+        this.notify("toggleView", "generator")
+        this.notify("editOpening", opening)
       })
     })
   }
@@ -53,7 +68,6 @@ export default class Mediator extends Observable {
     } else {
       this.proxy = this.proxies[1]
     }
-    this.proxy.updateUI()
   }
 
   action(action: any, payload: any) {

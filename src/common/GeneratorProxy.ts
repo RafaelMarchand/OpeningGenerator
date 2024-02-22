@@ -1,6 +1,7 @@
-import { Options } from "../components/OpeningGenerator/Configuration"
+import { Options } from "../components/Controls/Configuration"
 import { NodePosition } from "./Graph"
 import Proxy from "./Proxy"
+import { OpeningData } from "./useSaveOpening"
 import { Result, nextMoves } from "./utils"
 
 const MOUSE_LEFT = 0
@@ -51,12 +52,9 @@ export default class GeneratorProxy extends Proxy {
     if (event.button === MOUSE_LEFT) {
       this.boardPosition = fen
       this.updateUI()
-    } else if (event.button === MOUSE_RIGHT) {
+    }
+    if (event.button === MOUSE_RIGHT) {
       this.notify("showPopUp", fen, position, event.type)
     }
-  }
-
-  nodeHover(fen: string, position: NodePosition, event: MouseEvent) {
-    this.notify("showPopUp", fen, position, event.type)
   }
 }
