@@ -24,6 +24,12 @@ export default class Proxy extends Observable {
     this.notify("showPopUp", fen, position, event.type)
   }
 
+  resetGraph() {
+    this.graphBuilder = new GraphBuilder()
+    this.boardPosition = Board.STARTING_POSITION
+    this.updateUI()
+  }
+
   playNextMove(fen: string) {
     this.boardPosition = fen
     this.updateUI()

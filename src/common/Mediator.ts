@@ -56,8 +56,12 @@ export default class Mediator extends Observable {
       proxy.listen("editOpening", (opening: OpeningData) => {
         this.switchProxy("generator")
         this.proxy.loadOpening(opening)
-        this.notify("toggleView", "generator")
-        this.notify("editOpening", opening)
+      })
+    })
+
+    this.proxies.forEach((proxy: Proxy) => {
+      proxy.listen("reset", () => {
+        this.proxy.resetGraph()
       })
     })
   }
@@ -67,6 +71,7 @@ export default class Mediator extends Observable {
       this.proxy = this.proxies[0]
     } else {
       this.proxy = this.proxies[1]
+      this.proxy.resetGraph()
     }
   }
 

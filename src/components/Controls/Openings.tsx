@@ -1,5 +1,5 @@
 import { Button, IconButton, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
-import useSaveOpening, { OpeningData } from "../../common/useSaveOpening"
+import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import { Delete, Edit } from "@mui/icons-material"
 import Mediator from "../../common/Mediator"
 import { DispatchController } from "./Controls"
@@ -7,13 +7,13 @@ import { Dispatch } from "react"
 
 interface Props {
   dispatch: Dispatch<DispatchController>
+  setOpenings: (action: useOpeningsActions, opening: OpeningData) => void
+  openings: OpeningData[]
 }
 
 const mediator = new Mediator()
 
-export default function Openings({ dispatch }: Props) {
-  const [openings, dispatchOpening] = useSaveOpening()
-
+export default function Openings({ dispatch, openings, setOpenings }: Props) {
   return (
     <Stack
       direction="column"
@@ -39,13 +39,14 @@ export default function Openings({ dispatch }: Props) {
               sx={{ justifyContent: "flex-start" }}
               onClick={() => {
                 mediator.action("loadOpening", opening)
+                dispatch({ type: "setOpening", payload: { name: opening.name, index: opening.index } })
               }}>
               {opening.name}
             </Button>
             <IconButton
               onClick={() => {
                 mediator.action("editOpening", opening)
-                dispatch({ type: "edit", payload: opening })
+                dispatch({ type: "edit", payload: { name: opening.name, index: opening.index } })
               }}>
               <Edit />
             </IconButton>
@@ -54,7 +55,7 @@ export default function Openings({ dispatch }: Props) {
               sx={{ borderColor: "neutral.outlinedBorder" }}
               color="danger"
               onClick={() => {
-                dispatchOpening("remove", opening)
+                setOpenings("remove", opening)
               }}>
               <Delete />
             </IconButton>

@@ -1,5 +1,5 @@
 import Proxy from "./Proxy.js"
-import { GraphType, MoveData } from "./GraphBuilder.js"
+import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder.js"
 import { NodePosition } from "./Graph.js"
 
 const MOUSE_LEFT = 0
@@ -9,7 +9,7 @@ export default class LibraryProxy extends Proxy {
     super()
   }
 
-  action(action: any, payload: any): void {
+  action(action: any, payload: any = null): void {
     switch (action) {
       case "loadOpening":
         this.loadOpening(payload)

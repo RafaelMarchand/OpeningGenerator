@@ -1,41 +1,61 @@
 import { Button, Input, Stack, Typography } from "@mui/joy"
-import { Dispatch } from "react"
-import { SelectChangeEvent } from "@mui/material"
-import useSaveOpening from "../../common/useSaveOpening"
+import { Dispatch, useContext } from "react"
+import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import Mediator from "../../common/Mediator"
-import { ControllerState, DispatchController } from "./Controls"
+import { ControllerState, DispatchController, NO_OPENING_SELECTED } from "./Controls"
+import { SnackBarContext } from "../SnackBarProvider"
 
 interface Props {
   state: ControllerState
   dispatch: Dispatch<DispatchController>
+  openings: OpeningData[]
+  setOpenings: (action: useOpeningsActions, opening: OpeningData) => void
 }
 
 const mediator = new Mediator()
 
-export default function ManageOpening({ state, dispatch }: Props) {
-  const [openings, reducer] = useSaveOpening()
+export default function ManageOpening({ state, dispatch, openings, setOpenings }: Props) {
+  const setSnackBar = useContext(SnackBarContext)!
 
-  function handleInput(event: SelectChangeEvent) {
-    dispatch({ type: "setName", payload: event.target.value })
+  function getOpeningData(): OpeningData {
+    const opening = {
+      name: state.inputName,
+      index: state.openinIndex,
+      graph: mediator.proxy.graphBuilder.graph
+    }
+    return opening
   }
 
   function handleSave() {
-    const opening = {
-      name: state.openingName,
-      graph: mediator.proxy.graphBuilder.graph,
-      index: openings.length === 0 ? 0 : openings.length,
-      edit: false
+    setOpenings("save", getOpeningData())
+    dispatch({ type: "setInputName", payload: "" })
+  }
+
+  function handleRename() {
+    if (state.openinIndex === NO_OPENING_SELECTED) {
+      setSnackBar({
+        color: "primary",
+        open: true,
+        message: "No opening selected"
+      })
+      return
     }
-    reducer("save", opening)
-    dispatch({ type: "setName", payload: "" })
+    setOpenings("edit", getOpeningData())
+    setSnackBar({
+      color: "success",
+      open: true,
+      message: `Opening renamed to "${state.inputName}"`
+    })
   }
 
   function handleReset() {
-    //setEdite(false)
+    mediator.proxy.resetGraph()
+    dispatch({ type: "setOpening", payload: { index: -1, name: "" } })
   }
 
   function handleModify() {
-    //setEdite(false)
+    setOpenings("edit", getOpeningData())
+    dispatch({ type: "setInputName", payload: "" })
   }
 
   return (
@@ -55,30 +75,44 @@ export default function ManageOpening({ state, dispatch }: Props) {
       </Typography>
       <Input
         id="OpeningName"
-        value={state.openingName}
+        value={state.inputName}
         color="primary"
         placeholder="Opening Name"
         variant="outlined"
-        onChange={handleInput}
+        onChange={(event) => dispatch({ type: "setInputName", payload: event.target.value })}
       />
       <Stack direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={1}>
         {state.currentView === "library" ? (
-          <Button onClick={handleModify} fullWidth size="lg">
-            Rename
-          </Button>
+          <>
+            <Button onClick={handleRename} fullWidth size="lg">
+              Rename
+            </Button>
+            <Button onClick={handleModify} fullWidth size="lg">
+              Export PNG
+            </Button>
+          </>
         ) : (
-          <Button onClick={handleSave} fullWidth size="lg">
-            Save
-          </Button>
-        )}
-        {state.editOpening ? (
-          <Button onClick={handleModify} fullWidth size="lg">
-            Cancle
-          </Button>
-        ) : (
-          <Button onClick={handleReset} fullWidth size="lg">
-            Reset
-          </Button>
+          <>
+            {state.openinIndex !== NO_OPENING_SELECTED ? (
+              <>
+                <Button color="success" onClick={handleModify} sx={{ fontSize: "sm" }} fullWidth size="lg">
+                  Save Changes
+                </Button>
+                <Button color="neutral" onClick={handleReset} fullWidth size="lg">
+                  Cancle
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleSave} fullWidth size="lg">
+                  Save
+                </Button>
+                <Button onClick={handleReset} fullWidth size="lg">
+                  Reset
+                </Button>
+              </>
+            )}
+          </>
         )}
       </Stack>
     </Stack>

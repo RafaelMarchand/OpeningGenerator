@@ -1,4 +1,4 @@
-import { RefObject, useRef } from "react"
+import { RefObject, useEffect, useRef, useState } from "react"
 import Stack from "@mui/joy/Stack"
 import { ResizableBox } from "react-resizable"
 import { Box } from "@mui/joy"
@@ -15,14 +15,14 @@ interface Props {
 
 function Board({ boardRef }: Props) {
   const boardAreaRef = useRef<HTMLDivElement>(null)
+  const [maxSize, setMaxSize] = useState<number>(Infinity)
 
-  function getMaxSize() {
+  useEffect(() => {
     if (boardAreaRef.current) {
       const { width } = boardAreaRef.current?.getBoundingClientRect()
-      return width
+      setMaxSize(width)
     }
-    return Infinity
-  }
+  }, [])
 
   return (
     <Stack
@@ -38,7 +38,7 @@ function Board({ boardRef }: Props) {
         width={400}
         height={400}
         minConstraints={[300, 300]}
-        maxConstraints={[getMaxSize(), getMaxSize()]}
+        maxConstraints={[maxSize, maxSize]}
         resizeHandles={["se"]}>
         <Box ref={boardRef} sx={{ width: "100%", height: "100%", borderRadius: "2rem" }} />
       </ResizableBox>
