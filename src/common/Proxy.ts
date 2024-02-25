@@ -8,6 +8,7 @@ import { OpeningData } from "./useSaveOpening"
 export default class Proxy extends Observable {
   graphBuilder: GraphBuilder
   boardPosition: string
+
   constructor() {
     super()
     this.graphBuilder = new GraphBuilder()
@@ -37,6 +38,7 @@ export default class Proxy extends Observable {
 
   loadOpening(opening: OpeningData) {
     this.graphBuilder.graph = new Graphology({ type: "directed" }).import(opening.graph) as GraphType
+    this.boardPosition = Board.STARTING_POSITION
     this.updateUI()
   }
 

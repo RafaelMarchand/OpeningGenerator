@@ -3,12 +3,14 @@ import { Button, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
 import { MoveData } from "../common/GraphBuilder"
 import Mediator from "../common/Mediator"
 
+const mediator = new Mediator()
+
 export default function NextMoves() {
   const [moves, setMoves] = useState<MoveData[]>([])
   const [selected, setSelected] = useState<number>(0)
 
   useEffect(() => {
-    new Mediator().listen("positionChange", (moves: MoveData[]) => {
+    mediator.listen("positionChange", (moves: MoveData[]) => {
       setMoves(moves)
       setSelected(0)
     })
@@ -34,7 +36,7 @@ export default function NextMoves() {
               variant="soft"
               key={index}
               value={String(index)}
-              onClick={() => new Mediator().proxy.playNextMove(move.fen)}
+              onClick={() => mediator.proxy.playNextMove(move.fen)}
               onMouseOver={() => {
                 setSelected(index)
               }}>

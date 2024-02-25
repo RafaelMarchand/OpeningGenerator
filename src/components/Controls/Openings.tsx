@@ -1,9 +1,9 @@
-import { Button, IconButton, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
+import { Button, IconButton, Modal, ModalClose, Sheet, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
 import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import { Delete, Edit } from "@mui/icons-material"
 import Mediator from "../../common/Mediator"
 import { DispatchController } from "./Controls"
-import { Dispatch } from "react"
+import { Dispatch, useRef, useState } from "react"
 
 interface Props {
   dispatch: Dispatch<DispatchController>
@@ -14,6 +14,25 @@ interface Props {
 const mediator = new Mediator()
 
 export default function Openings({ dispatch, openings, setOpenings }: Props) {
+  const currentOpening = useRef<OpeningData | null>(null)
+  const [openModal, setOpenModal] = useState<boolean>(false)
+
+  function handleEdit(opening: OpeningData) {
+    currentOpening.current = opening
+    if (!mediator.generatorProxy.graphBuilder.saved) {
+      setOpenModal(true)
+      return
+    }
+    mediator.libraryProxy.loadOpening(opening)
+    dispatch({ type: "edit", payload: { name: opening.name, index: opening.index } })
+  }
+
+  function handleContinue() {
+    setOpenModal(false)
+    mediator.generatorProxy.graphBuilder.saved = true
+    handleEdit(currentOpening.current!)
+  }
+
   return (
     <Stack
       direction="column"
@@ -38,15 +57,14 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
               fullWidth
               sx={{ justifyContent: "flex-start" }}
               onClick={() => {
-                mediator.action("loadOpening", opening)
+                mediator.proxy.loadOpening(opening)
                 dispatch({ type: "setOpening", payload: { name: opening.name, index: opening.index } })
               }}>
               {opening.name}
             </Button>
             <IconButton
               onClick={() => {
-                mediator.action("editOpening", opening)
-                dispatch({ type: "edit", payload: { name: opening.name, index: opening.index } })
+                handleEdit(opening)
               }}>
               <Edit />
             </IconButton>
@@ -62,6 +80,40 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
           </ToggleButtonGroup>
         )
       })}
+      <Modal
+        aria-labelledby="modal-title"
+        aria-describedby="modal-desc"
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Sheet
+          variant="soft"
+          color="danger"
+          sx={{
+            maxWidth: 500,
+            borderRadius: "md",
+            p: 3,
+            boxShadow: "lg"
+          }}>
+          <ModalClose variant="plain" sx={{ m: 1 }} />
+          <Typography component="h2" id="modal-title" level="h4" textColor="inherit" fontWeight="lg" mb={1}>
+            Current opening not saved
+          </Typography>
+          <Typography id="modal-desc" textColor="text.tertiary">
+            Loading this opening will discard the changes on the opening that is currently beeing edited
+          </Typography>
+          <Button color="neutral" sx={{ mt: 2, mr: 2, width: "25%" }} size="lg" onClick={handleContinue}>
+            Continue
+          </Button>
+          <Button
+            color="neutral"
+            sx={{ mt: 2, mr: 2, width: "25%" }}
+            onClick={() => setOpenModal(false)}
+            size="lg">
+            Cancle
+          </Button>
+        </Sheet>
+      </Modal>
     </Stack>
   )
 }

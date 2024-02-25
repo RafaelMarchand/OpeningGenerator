@@ -24,10 +24,12 @@ export type GraphType = Graphology<NodeAttributes, EdgeAttributes, GraphAttribut
 
 export default class GraphBuilder {
   graph: GraphType
+  saved: boolean
 
   constructor() {
     this.graph = new Graphology({ type: "directed" })
     this.graph.addNode(Board.STARTING_POSITION)
+    this.saved = true
   }
 
   addNode(fen: string) {
@@ -41,6 +43,7 @@ export default class GraphBuilder {
   }
 
   addMove(move: string, fen: string, prevFen: string): string {
+    this.saved = false
     this.addNode(fen)
     this.addEdge(move, fen, prevFen)
     return fen

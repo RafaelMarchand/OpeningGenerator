@@ -14,7 +14,7 @@ interface Props {
 
 const mediator = new Mediator()
 
-export default function ManageOpening({ state, dispatch, openings, setOpenings }: Props) {
+export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
   const setSnackBar = useContext(SnackBarContext)!
 
   function getOpeningData(): OpeningData {
@@ -27,8 +27,17 @@ export default function ManageOpening({ state, dispatch, openings, setOpenings }
   }
 
   function handleSave() {
+    if (state.inputName === "") {
+      setSnackBar({
+        color: "danger",
+        open: true,
+        message: "Please provide a name"
+      })
+      return
+    }
     setOpenings("save", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
+    mediator.proxies[ProxyIndex.Generator].graphBuilder.saved = true
   }
 
   function handleRename() {
@@ -53,9 +62,17 @@ export default function ManageOpening({ state, dispatch, openings, setOpenings }
     dispatch({ type: "setOpening", payload: { index: -1, name: "" } })
   }
 
-  function handleModify() {
+  function handleEdit() {
     setOpenings("edit", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
+  }
+
+  function handleExport() {
+    setSnackBar({
+      color: "primary",
+      open: true,
+      message: `Not supported yet"`
+    })
   }
 
   return (
@@ -77,6 +94,7 @@ export default function ManageOpening({ state, dispatch, openings, setOpenings }
         id="OpeningName"
         value={state.inputName}
         color="primary"
+        error
         placeholder="Opening Name"
         variant="outlined"
         onChange={(event) => dispatch({ type: "setInputName", payload: event.target.value })}
@@ -87,7 +105,7 @@ export default function ManageOpening({ state, dispatch, openings, setOpenings }
             <Button onClick={handleRename} fullWidth size="lg">
               Rename
             </Button>
-            <Button onClick={handleModify} fullWidth size="lg">
+            <Button onClick={handleExport} fullWidth size="lg">
               Export PNG
             </Button>
           </>
@@ -95,7 +113,7 @@ export default function ManageOpening({ state, dispatch, openings, setOpenings }
           <>
             {state.openinIndex !== NO_OPENING_SELECTED ? (
               <>
-                <Button color="success" onClick={handleModify} sx={{ fontSize: "sm" }} fullWidth size="lg">
+                <Button color="success" onClick={handleEdit} sx={{ fontSize: "sm" }} fullWidth size="lg">
                   Save Changes
                 </Button>
                 <Button color="neutral" onClick={handleReset} fullWidth size="lg">

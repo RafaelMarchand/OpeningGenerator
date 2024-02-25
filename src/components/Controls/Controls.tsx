@@ -76,11 +76,13 @@ export default function Controls() {
         <ToggleButtonGroup
           size="lg"
           variant="solid"
-          value={state.currentView}
+          value={String(state.currentView)}
           onChange={(_event, newValue) => {
-            if (newValue) dispatch({ type: "toggle", payload: {} })
-            mediator.switchProxy(newValue!)
-            mediator.proxy.updateUI()
+            if (newValue) {
+              dispatch({ type: "toggle", payload: {} })
+              mediator.switchProxy()
+              mediator.proxy.updateUI()
+            }
           }}>
           <Button
             value="generator"

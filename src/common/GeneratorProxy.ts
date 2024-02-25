@@ -1,7 +1,6 @@
 import { Options } from "../components/Controls/Configuration"
 import { NodePosition } from "./Graph"
 import Proxy from "./Proxy"
-import { OpeningData } from "./useSaveOpening"
 import { Result, nextMoves } from "./utils"
 
 const MOUSE_LEFT = 0
@@ -12,18 +11,12 @@ export default class GeneratorProxy extends Proxy {
     super()
   }
 
-  action(action: any, payload: any) {
-    switch (action) {
-      case "generate":
-        this.generate(this.boardPosition, payload)
-        break
-      case "removePosition":
-        this.boardPosition = this.graphBuilder.removeNode(payload)
-        this.updateUI()
-    }
+  removePosition(fen: string) {
+    this.boardPosition = this.graphBuilder.removeNode(fen)
+    this.updateUI()
   }
 
-  generate(fen: string, options: Options) {
+  generate(options: Options) {
     const generate = (results: Result[], depth: number, prevFen: string) => {
       for (const result of results) {
         if (result.move !== "") {
@@ -39,7 +32,7 @@ export default class GeneratorProxy extends Proxy {
       }
     }
 
-    generate([{ fen: fen, move: "" }], 0, fen)
+    generate([{ fen: this.boardPosition, move: "" }], 0, this.boardPosition)
   }
 
   boardMove(move: string, fen: string, prevFen: string) {

@@ -2,7 +2,7 @@ import { Button, Select, Stack, Switch, Typography, Option, Divider } from "@mui
 import { SyntheticEvent, useReducer } from "react"
 import RaitingSlider from "./RaitingSlider"
 import { Color } from "../../common/utils"
-import Mediator from "../../common/Mediator"
+import Mediator, { ProxyIndex } from "../../common/Mediator"
 
 export type Options = {
   color: Color
@@ -48,11 +48,13 @@ function reducer(state: Options, action: DispatchParams): Options {
   }
 }
 
+const mediator = new Mediator()
+
 export default function Configuration() {
   const [options, dispatchOptions] = useReducer(reducer, DEFAULT_OPTIONS)
 
   function onClickGenerate() {
-    new Mediator().action("generate", options)
+    mediator.generatorProxy.generate(options)
   }
 
   return (

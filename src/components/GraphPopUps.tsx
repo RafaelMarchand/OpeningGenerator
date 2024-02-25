@@ -4,6 +4,7 @@ import { Button } from "@mui/joy"
 import Board from "../common/Board"
 import DelayHandler from "../common/DelayHandler"
 import Mediator from "../common/Mediator"
+import Proxy from "../common/Proxy"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -83,6 +84,7 @@ function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): P
   }
 }
 
+const mediator = new Mediator()
 const buttonDelayHandler = new DelayHandler()
 
 export default function GraphPopUps({ graphRef }: Props) {
@@ -110,7 +112,9 @@ export default function GraphPopUps({ graphRef }: Props) {
   }
 
   useEffect(() => {
-    new Mediator().proxies.forEach((proxy) => proxy.listen("showPopUp", mouseHandler))
+    new Array<Proxy>(mediator.generatorProxy, mediator.libraryProxy).forEach((proxy) =>
+      proxy.listen("showPopUp", mouseHandler)
+    )
   }, [])
 
   return (
@@ -135,7 +139,7 @@ export default function GraphPopUps({ graphRef }: Props) {
                 })
               }
               onClick={() => {
-                new Mediator().action("removePosition", state.fen)
+                mediator.generatorProxy.removePosition(state.fen)
                 dispatch({
                   type: "hideButton",
                   payload: {}

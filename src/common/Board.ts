@@ -55,6 +55,8 @@ export default class Board extends Observable {
     const [position, san] = this.validateMove(move)
     if (position !== this.getPosition()) {
       this.notify("boardMove", san, position, this.getPosition())
+    } else {
+      this.setPosition(position)
     }
   }
 }

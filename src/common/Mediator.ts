@@ -16,6 +16,8 @@ export default class Mediator extends Observable {
   board: Board | undefined
   graph: Graph | undefined
   proxies!: Proxy[]
+  libraryProxy!: LibraryProxy
+  generatorProxy!: GeneratorProxy
   proxy!: Proxy
 
   constructor() {
@@ -24,8 +26,9 @@ export default class Mediator extends Observable {
     Mediator.instance = this
     this.board = undefined
     this.graph = undefined
-    this.proxies = [new GeneratorProxy(), new LibraryProxy()]
-    this.proxy = this.proxies[0]
+    this.libraryProxy = new LibraryProxy()
+    this.generatorProxy = new GeneratorProxy()
+    this.proxy = this.generatorProxy
   }
 
   initialize(boardRef: Ref, graphRef: Ref) {
@@ -44,7 +47,7 @@ export default class Mediator extends Observable {
       this.proxy.nodeHover(fen, position, event)
     })
 
-    this.proxies.forEach((proxy: Proxy) => {
+    new Array<Proxy>(this.generatorProxy, this.libraryProxy).forEach((proxy: Proxy) => {
       proxy.listen("setState", (fen: string, graph: GraphType, nextMoves: MoveData[]) => {
         this.board!.setPosition(fen)
         this.graph!.draw(graph)
@@ -52,30 +55,18 @@ export default class Mediator extends Observable {
       })
     })
 
-    this.proxies.forEach((proxy: Proxy) => {
-      proxy.listen("editOpening", (opening: OpeningData) => {
-        this.switchProxy("generator")
-        this.proxy.loadOpening(opening)
-      })
-    })
-
-    this.proxies.forEach((proxy: Proxy) => {
-      proxy.listen("reset", () => {
-        this.proxy.resetGraph()
-      })
+    this.libraryProxy.listen("editOpening", (opening: OpeningData) => {
+      this.switchProxy()
+      this.proxy.loadOpening(opening)
     })
   }
 
-  switchProxy(identifier: ProxyIdentifier) {
-    if (identifier === "generator") {
-      this.proxy = this.proxies[0]
+  switchProxy() {
+    if (this.proxy === this.libraryProxy) {
+      this.proxy = this.generatorProxy
     } else {
-      this.proxy = this.proxies[1]
+      this.proxy = this.libraryProxy
       this.proxy.resetGraph()
     }
-  }
-
-  action(action: any, payload: any) {
-    this.proxy.action(action, payload)
   }
 }

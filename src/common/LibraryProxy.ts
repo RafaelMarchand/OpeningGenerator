@@ -1,6 +1,7 @@
 import Proxy from "./Proxy.js"
 import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder.js"
 import { NodePosition } from "./Graph.js"
+import { OpeningData } from "./useSaveOpening.js"
 
 const MOUSE_LEFT = 0
 
@@ -9,15 +10,8 @@ export default class LibraryProxy extends Proxy {
     super()
   }
 
-  action(action: any, payload: any = null): void {
-    switch (action) {
-      case "loadOpening":
-        this.loadOpening(payload)
-        break
-      case "editOpening":
-        this.notify("editOpening", payload)
-        break
-    }
+  editOpening(opening: OpeningData) {
+    this.notify("editOpening", opening)
   }
 
   boardMove(move: string, fen: string, prevFen: string) {
