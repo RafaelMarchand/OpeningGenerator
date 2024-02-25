@@ -19,7 +19,7 @@ interface GraphMethods {
   getNodeFocus: (graph: Graphology, nodeKey: string) => boolean
 }
 
-const GRAPH_DRAWR_OPTIONS = {
+export const GRAPH_DRAWR_OPTIONS = {
   width: 1000,
   height: 500,
   nodeRadius: 5,
@@ -45,13 +45,10 @@ const GRAPH_METHODS: GraphMethods = {
 }
 
 export default class Graph extends Observable {
-  static instance: Graph | null = null
   graphDrawer: GraphDrawer
 
   constructor(ref: RefObject<HTMLDivElement>) {
-    if (Graph.instance) return Graph.instance
     super()
-    Graph.instance = this
     this.graphDrawer = new GraphDrawer(
       GRAPH_METHODS,
       ref.current,

@@ -1,10 +1,10 @@
 import { Button, Stack, ToggleButtonGroup } from "@mui/joy"
 import Configuration from "./Configuration"
-import { useEffect, useReducer, useState } from "react"
+import { useReducer } from "react"
 import Openings from "./Openings"
 import Mediator, { ProxyIdentifier } from "../../common/Mediator"
 import ManageOpening from "./ManageOpening"
-import useSaveOpening, { OpeningData } from "../../common/useSaveOpening"
+import useSaveOpening from "../../common/useSaveOpening"
 
 export interface DispatchController {
   type: ActionController
@@ -16,7 +16,7 @@ export type ActionController = "setOpening" | "edit" | "toggle" | "setInputName"
 export type ControllerState = {
   currentView: ProxyIdentifier
   inputName: string
-  openinIndex: -1
+  openingIndex: -1
 }
 
 export const NO_OPENING_SELECTED = -1
@@ -31,17 +31,17 @@ function reducer(prevState: ControllerState, action: DispatchController): Contro
       state.inputName = action.payload
       break
     case "setOpening":
-      state.openinIndex = action.payload.index
+      state.openingIndex = action.payload.index
       state.inputName = action.payload.name
       break
     case "edit":
-      state.openinIndex = action.payload.index
+      state.openingIndex = action.payload.index
       state.inputName = action.payload.name
       state.currentView = "generator"
       break
     case "toggle":
       state.currentView = prevState.currentView === "generator" ? "library" : "generator"
-      state.openinIndex = NO_OPENING_SELECTED
+      state.openingIndex = NO_OPENING_SELECTED
       state.inputName = ""
       break
   }
@@ -53,7 +53,7 @@ const mediator = new Mediator()
 const DEFAULT_CONTROL_STATE: ControllerState = {
   currentView: "generator",
   inputName: "",
-  openinIndex: NO_OPENING_SELECTED
+  openingIndex: NO_OPENING_SELECTED
 }
 
 export default function Controls() {

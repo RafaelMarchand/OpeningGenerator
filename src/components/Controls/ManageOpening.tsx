@@ -20,7 +20,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
   function getOpeningData(): OpeningData {
     const opening = {
       name: state.inputName,
-      index: state.openinIndex,
+      index: state.openingIndex,
       graph: mediator.proxy.graphBuilder.graph
     }
     return opening
@@ -37,11 +37,11 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     }
     setOpenings("save", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
-    mediator.proxies[ProxyIndex.Generator].graphBuilder.saved = true
+    mediator.generatorProxy.graphBuilder.saved = true
   }
 
   function handleRename() {
-    if (state.openinIndex === NO_OPENING_SELECTED) {
+    if (state.openingIndex === NO_OPENING_SELECTED) {
       setSnackBar({
         color: "primary",
         open: true,
@@ -94,7 +94,6 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
         id="OpeningName"
         value={state.inputName}
         color="primary"
-        error
         placeholder="Opening Name"
         variant="outlined"
         onChange={(event) => dispatch({ type: "setInputName", payload: event.target.value })}
@@ -111,7 +110,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
           </>
         ) : (
           <>
-            {state.openinIndex !== NO_OPENING_SELECTED ? (
+            {state.openingIndex !== NO_OPENING_SELECTED ? (
               <>
                 <Button color="success" onClick={handleEdit} sx={{ fontSize: "sm" }} fullWidth size="lg">
                   Save Changes

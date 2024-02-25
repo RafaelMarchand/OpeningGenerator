@@ -51,7 +51,9 @@ export default class Mediator extends Observable {
       proxy.listen("setState", (fen: string, graph: GraphType, nextMoves: MoveData[]) => {
         this.board!.setPosition(fen)
         this.graph!.draw(graph)
+        const currentProxy: ProxyIdentifier = this.proxy === this.generatorProxy ? "generator" : "library"
         this.notify("positionChange", nextMoves)
+        this.notify("stateChange", graph, currentProxy)
       })
     })
 

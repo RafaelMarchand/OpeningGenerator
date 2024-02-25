@@ -1,9 +1,7 @@
 import Proxy from "./Proxy.js"
-import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder.js"
+import { MoveData } from "./GraphBuilder.js"
 import { NodePosition } from "./Graph.js"
 import { OpeningData } from "./useSaveOpening.js"
-
-const MOUSE_LEFT = 0
 
 export default class LibraryProxy extends Proxy {
   constructor() {
@@ -17,7 +15,6 @@ export default class LibraryProxy extends Proxy {
   boardMove(move: string, fen: string, prevFen: string) {
     const nextMoves = this.graphBuilder.getNextMoves(prevFen)
     const match = nextMoves.find((moveData: MoveData) => moveData.move === move)
-    console.log(fen, prevFen)
     if (match) {
       this.boardPosition = fen
     } else {
@@ -27,6 +24,7 @@ export default class LibraryProxy extends Proxy {
   }
 
   nodeClick(fen: string, _position: NodePosition, event: MouseEvent) {
+    const MOUSE_LEFT = 0
     if (event.button === MOUSE_LEFT) {
       this.boardPosition = fen
       this.updateUI()

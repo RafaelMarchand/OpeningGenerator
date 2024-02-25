@@ -6,7 +6,6 @@ import * as cg from "chessground/types"
 import Observable from "./Observable"
 
 export default class Board extends Observable {
-  static instance: Board | null = null
   static STARTING_POSITION: string = (() => {
     const chess = new Chess()
     return chess.fen()
@@ -16,9 +15,7 @@ export default class Board extends Observable {
   chessground: any
 
   constructor(ref: RefObject<HTMLDivElement>) {
-    if (Board.instance) return Board.instance
     super()
-    Board.instance = this
     this.config = {
       fen: Board.STARTING_POSITION,
       events: {

@@ -1,10 +1,11 @@
 import Chessground from "@react-chess/chessground"
 import { RefObject, useEffect, useReducer } from "react"
-import { Button } from "@mui/joy"
+import { Button, Chip } from "@mui/joy"
 import Board from "../common/Board"
 import DelayHandler from "../common/DelayHandler"
 import Mediator from "../common/Mediator"
 import Proxy from "../common/Proxy"
+import { GRAPH_DRAWR_OPTIONS } from "../common/Graph"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -33,7 +34,7 @@ enum MouseEvents {
   MouseUp = "mouseup",
   MouseMove = "mousemove"
 }
-const OFFSET_NODE_POPUP = 15
+
 const DELAY_HIDE_REMOVE_BUTTON = 1000
 
 const DEFAULT_GRAPH_POPUPS: GraphPopUpsState = {
@@ -75,12 +76,25 @@ function reducer(prevState: GraphPopUpsState, action: DispatchGraphPopUp): Graph
   return state
 }
 
+const OFFSET_NODE_POPUP = 15
+const BOARD_SIZE = 120
+
 function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): Position {
   if (!graphRef.current) return { x: 0, y: 0 }
-  const { left, top } = graphRef.current!.getBoundingClientRect()
+  // legacy code but css is tricky, might need in future
+  //const { left, top } = graphRef.current!.getBoundingClientRect()
+  let posX = position.x + OFFSET_NODE_POPUP
+  let posY = position.y + OFFSET_NODE_POPUP
+
+  if (position.x + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.width) {
+    posX = position.x - OFFSET_NODE_POPUP - BOARD_SIZE
+  }
+  if (position.y + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.height) {
+    posY = position.y - OFFSET_NODE_POPUP - BOARD_SIZE
+  }
   return {
-    x: left + position.x + OFFSET_NODE_POPUP,
-    y: top + position.y + OFFSET_NODE_POPUP
+    x: posX,
+    y: posY
   }
 }
 
@@ -125,9 +139,9 @@ export default function GraphPopUps({ graphRef }: Props) {
             position: "absolute",
             left: `${popUpPosition.x}px`,
             top: `${popUpPosition.y}px`,
-            zIndex: "2"
+            zIndex: "1"
           }}>
-          {state.showBoard && <Chessground config={config} width={100} height={100} />}
+          {state.showBoard && <Chessground config={config} width={BOARD_SIZE} height={BOARD_SIZE} />}
           {state.showRemoveButton && (
             <Button
               color="danger"

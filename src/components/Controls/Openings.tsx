@@ -24,6 +24,7 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
       return
     }
     mediator.libraryProxy.loadOpening(opening)
+    mediator.switchProxy()
     dispatch({ type: "edit", payload: { name: opening.name, index: opening.index } })
   }
 
@@ -74,6 +75,7 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
               color="danger"
               onClick={() => {
                 setOpenings("remove", opening)
+                dispatch({ type: "setInputName", payload: "" })
               }}>
               <Delete />
             </IconButton>
