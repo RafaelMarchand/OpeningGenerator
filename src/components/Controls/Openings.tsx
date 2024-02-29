@@ -1,4 +1,14 @@
-import { Button, IconButton, Modal, ModalClose, Sheet, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
+import {
+  Button,
+  Divider,
+  IconButton,
+  Modal,
+  ModalClose,
+  Sheet,
+  Stack,
+  ToggleButtonGroup,
+  Typography
+} from "@mui/joy"
 import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import { Delete, Edit } from "@mui/icons-material"
 import Mediator from "../../common/Mediator"

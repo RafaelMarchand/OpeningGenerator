@@ -1,10 +1,11 @@
 import { Button, Stack, ToggleButtonGroup } from "@mui/joy"
 import Configuration from "./Configuration"
-import { useReducer } from "react"
+import { useEffect, useReducer } from "react"
 import Openings from "./Openings"
 import Mediator, { ProxyIdentifier } from "../../common/Mediator"
 import ManageOpening from "./ManageOpening"
 import useSaveOpening from "../../common/useSaveOpening"
+import { useTour } from "@reactour/tour"
 
 export interface DispatchController {
   type: ActionController
@@ -85,10 +86,11 @@ export default function Controls() {
             }
           }}>
           <Button
+            className="T1-createTab"
             value="generator"
             sx={{ borderBottomRightRadius: "0", borderBottomLeftRadius: "0" }}
             fullWidth>
-            Configuration
+            Create Opening
           </Button>
           <Button
             value="library"

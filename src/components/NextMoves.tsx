@@ -18,6 +18,7 @@ export default function NextMoves() {
 
   return (
     <Stack
+      className="T5-nextMoves"
       sx={{ height: "100%" }}
       direction="column"
       justifyContent="center"

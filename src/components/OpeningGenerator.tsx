@@ -8,7 +8,7 @@ import Graph from "./Graph"
 
 const mediator = new Mediator()
 
-function OpeningGenerator() {
+export default function OpeningGenerator() {
   const boardRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<HTMLDivElement>(null)
 
@@ -40,5 +40,3 @@ function OpeningGenerator() {
     </Stack>
   )
 }
-
-export default OpeningGenerator

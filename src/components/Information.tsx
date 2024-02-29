@@ -4,6 +4,7 @@ import NextMoves from "./NextMoves"
 export default function Information() {
   return (
     <Stack
+      className="T4-info"
       direction="column"
       justifyContent="flex-start"
       alignItems="stretch"

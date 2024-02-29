@@ -56,4 +56,8 @@ export default class Board extends Observable {
       this.setPosition(position)
     }
   }
+
+  executeMove(orig: cg.Key, dest: cg.Key) {
+    this.chessground.move(orig, dest)
+  }
 }

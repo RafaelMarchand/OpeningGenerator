@@ -1,4 +1,4 @@
-import { Options } from "../components/Controls/Configuration"
+import { DEFAULT_OPTIONS, Options } from "../components/Controls/Configuration"
 import { NodePosition } from "./Graph"
 import Proxy from "./Proxy"
 import { Result, nextMoves } from "./utils"
@@ -16,7 +16,7 @@ export default class GeneratorProxy extends Proxy {
     this.updateUI()
   }
 
-  generate(options: Options) {
+  generate(options: Options = DEFAULT_OPTIONS) {
     const generate = (results: Result[], depth: number, prevFen: string) => {
       for (const result of results) {
         if (result.move !== "") {

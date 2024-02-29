@@ -61,7 +61,7 @@ export default function Graph({ graphRef }: Props) {
           {showText === TextState.Generator && (
             <Typography sx={{ textAlign: "center", color: "neutral.200" }} level="h1">
               Add repertoir moves
-              <br /> either by generating moves
+              <br /> either by Generate Opening
               <br /> or by making moves on the board
             </Typography>
           )}
@@ -72,7 +72,7 @@ export default function Graph({ graphRef }: Props) {
           )}
         </Stack>
       )}
-      <Box ref={graphRef} />
+      <Box className="T3-graph" ref={graphRef} />
       <GraphPopUps graphRef={graphRef} />
     </Box>
   )

@@ -40,7 +40,11 @@ function Board({ boardRef }: Props) {
         minConstraints={[300, 300]}
         maxConstraints={[maxSize, maxSize]}
         resizeHandles={["se"]}>
-        <Box ref={boardRef} sx={{ width: "100%", height: "100%", borderRadius: "2rem" }} />
+        <Box
+          className="T2-board"
+          ref={boardRef}
+          sx={{ width: "100%", height: "100%", borderRadius: "2rem" }}
+        />
       </ResizableBox>
     </Stack>
   )
