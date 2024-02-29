@@ -1,6 +1,6 @@
 import Chessground from "@react-chess/chessground"
 import { RefObject, useEffect, useReducer } from "react"
-import { Button, Chip } from "@mui/joy"
+import { Button } from "@mui/joy"
 import Board from "../common/Board"
 import DelayHandler from "../common/DelayHandler"
 import Mediator from "../common/Mediator"

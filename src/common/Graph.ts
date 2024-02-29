@@ -1,10 +1,10 @@
 import { RefObject } from "react"
-import GraphDrawer from "../../node_modules/graph-drawer/src/main.js"
-//import GraphDrawer from "graph-drawer"
 import Graphology from "graphology"
 import Board from "./Board.js"
 import Observable from "./Observable.js"
 import { GraphType } from "./GraphBuilder.js"
+// @ts-ignore
+import GraphDrawer from "graph-drawer"
 
 export type NodePosition = {
   x: number
@@ -40,7 +40,7 @@ const GRAPH_METHODS: GraphMethods = {
   getNodeKeys: (graph: Graphology) => graph.mapNodes((key: string) => key),
   getOutEdgesKeys: (graph: Graphology, nodeKey: string) => graph.mapOutEdges(nodeKey, (edge: any) => edge),
   getDestNodeKey: (graph: Graphology, edgeKey: string) => graph.target(edgeKey),
-  getNodeValue: (graph: Graphology, nodeKey: string) => 0,
+  getNodeValue: () => 0,
   getNodeFocus: (graph: Graphology, nodeKey: string) => nodeKey === graph.getAttribute("focus")
 }
 

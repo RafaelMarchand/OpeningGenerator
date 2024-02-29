@@ -14,12 +14,10 @@ export default class Proxy extends Observable {
     this.graphBuilder = new GraphBuilder()
     this.boardPosition = Board.STARTING_POSITION
   }
-
-  action(action: any, payload: any) {}
-
+  // @ts-ignore
   boardMove(move: string, fen: string, prevFen: string) {}
-
-  nodeClick(fen: string, position: NodePosition, event: MouseEvent) {}
+  // @ts-ignore
+  nodeClick(fen: string, _position: NodePosition, event: MouseEvent) {}
 
   nodeHover(fen: string, position: NodePosition, event: MouseEvent) {
     this.notify("showPopUp", fen, position, event.type)

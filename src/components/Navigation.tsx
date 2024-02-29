@@ -1,4 +1,4 @@
-import { Home, Save, LibraryBooks, Info } from "@mui/icons-material"
+import { Home } from "@mui/icons-material"
 import { Box, Button, List, ListItem, ListItemButton, ListItemDecorator, Stack } from "@mui/joy"
 import { useTour } from "@reactour/tour"
 import { useContext, useEffect, useState } from "react"
@@ -21,6 +21,7 @@ export default function Navigation() {
   }, [currentStep])
 
   function handleOpenTour() {
+    // @ts-ignore
     if (mediator.proxy === mediator.libraryProxy) {
       setSnackBar({
         color: "danger",

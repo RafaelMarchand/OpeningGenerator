@@ -1,11 +1,10 @@
 import { Button, Stack, ToggleButtonGroup } from "@mui/joy"
 import Configuration from "./Configuration"
-import { useEffect, useReducer } from "react"
+import { useReducer } from "react"
 import Openings from "./Openings"
 import Mediator, { ProxyIdentifier } from "../../common/Mediator"
 import ManageOpening from "./ManageOpening"
 import useSaveOpening from "../../common/useSaveOpening"
-import { useTour } from "@reactour/tour"
 
 export interface DispatchController {
   type: ActionController

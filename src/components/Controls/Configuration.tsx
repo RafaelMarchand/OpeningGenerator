@@ -2,7 +2,7 @@ import { Button, Select, Stack, Switch, Typography, Option, Divider, Box } from 
 import { SyntheticEvent, useReducer } from "react"
 import RaitingSlider from "./RaitingSlider"
 import { Color } from "../../common/utils"
-import Mediator, { ProxyIndex } from "../../common/Mediator"
+import Mediator from "../../common/Mediator"
 
 export type Options = {
   color: Color

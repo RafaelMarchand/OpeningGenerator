@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from "react"
 import Stack from "@mui/joy/Stack"
+// @ts-ignore
 import { ResizableBox } from "react-resizable"
 import { Box } from "@mui/joy"
 
