@@ -15,6 +15,9 @@ export default function OpeningGenerator() {
   useEffect(() => {
     mediator.initialize(boardRef, graphRef)
     graphRef.current?.addEventListener("contextmenu", (e) => e.preventDefault())
+    return () => {
+      graphRef.current?.removeEventListener("contextmenu", (e) => e.preventDefault())
+    }
   }, [])
 
   return (

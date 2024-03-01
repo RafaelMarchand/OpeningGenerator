@@ -15,7 +15,6 @@ export default class Mediator extends Observable {
   static instance: Mediator | null = null
   board: Board | undefined
   graph: Graph | undefined
-  proxies!: Proxy[]
   libraryProxy!: LibraryProxy
   generatorProxy!: GeneratorProxy
   proxy!: Proxy

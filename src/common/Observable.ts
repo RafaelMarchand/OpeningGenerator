@@ -23,4 +23,10 @@ export default class Observable {
       }
     })
   }
+
+  remove(name: string) {
+    this.observers = this.observers.filter((observer: Observer) => {
+      return observer.name !== name
+    })
+  }
 }

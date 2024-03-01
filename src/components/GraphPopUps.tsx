@@ -126,9 +126,11 @@ export default function GraphPopUps({ graphRef }: Props) {
   }
 
   useEffect(() => {
-    new Array<Proxy>(mediator.generatorProxy, mediator.libraryProxy).forEach((proxy) =>
-      proxy.listen("showPopUp", mouseHandler)
-    )
+    const proxies = new Array<Proxy>(mediator.generatorProxy, mediator.libraryProxy)
+    proxies.forEach((proxy) => proxy.listen("showPopUp", mouseHandler))
+    return () => {
+      proxies.forEach((proxy) => proxy.remove("showPopUp"))
+    }
   }, [])
 
   return (

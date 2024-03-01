@@ -14,6 +14,9 @@ export default function NextMoves() {
       setMoves(moves)
       setSelected(0)
     })
+    return () => {
+      mediator.remove("positionChange")
+    }
   }, [])
 
   return (

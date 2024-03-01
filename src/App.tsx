@@ -6,7 +6,7 @@ import SnackbarProvider from "./components/SnackBarProvider"
 import TutorialProvider from "./components/TutorialProvider"
 import About from "./components/About"
 
-function App() {
+export default function App() {
   return (
     <SnackbarProvider>
       <TutorialProvider>
@@ -16,7 +16,7 @@ function App() {
           justifyContent="flex-start"
           alignItems="flex-start"
           spacing={2}>
-          <Navigation></Navigation>
+          <Navigation />
           <Routes>
             <Route path="/" element={<OpeningGenerator />} />
             <Route path="/about" element={<About />} />
@@ -26,5 +26,3 @@ function App() {
     </SnackbarProvider>
   )
 }
-
-export default App

@@ -12,7 +12,7 @@ interface Props {
 enum TextState {
   Generator = 0,
   Library = 1,
-  Nonde = 2
+  None = 2
 }
 
 const mediator = new Mediator()
@@ -30,9 +30,12 @@ export default function Graph({ graphRef }: Props) {
           setShowText(TextState.Library)
         }
       } else {
-        setShowText(TextState.Nonde)
+        setShowText(TextState.None)
       }
     })
+    return () => {
+      mediator.remove("stateChange")
+    }
   }, [])
 
   return (
@@ -42,7 +45,7 @@ export default function Graph({ graphRef }: Props) {
         width: "1000px",
         height: "500px"
       }}>
-      {showText !== TextState.Nonde && (
+      {showText !== TextState.None && (
         <Stack
           sx={{
             height: "100%",
@@ -60,14 +63,14 @@ export default function Graph({ graphRef }: Props) {
           spacing={2}>
           {showText === TextState.Generator && (
             <Typography sx={{ textAlign: "center", color: "neutral.200" }} level="h1">
-              Add repertoir moves
+              Add Repertoire moves
               <br /> either by Generate Opening
               <br /> or by making moves on the board
             </Typography>
           )}
           {showText === TextState.Library && (
             <Typography sx={{ textAlign: "center", color: "neutral.200" }} level="h1">
-              Choose Repertoir from Library
+              Choose Repertoire from Library
             </Typography>
           )}
         </Stack>

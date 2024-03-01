@@ -119,7 +119,7 @@ export default function Configuration() {
       </Box>
       <RaitingSlider
         className="raitingOpp"
-        text="Raiting"
+        text="Rating"
         dispatchOptions={dispatchOptions}
         action={"rangeOpponent"}
       />
@@ -145,7 +145,7 @@ export default function Configuration() {
       </Box>
       <RaitingSlider
         className="raitingRep"
-        text="Raiting"
+        text="Rating"
         dispatchOptions={dispatchOptions}
         action={"rangeOpeningMoves"}
       />
