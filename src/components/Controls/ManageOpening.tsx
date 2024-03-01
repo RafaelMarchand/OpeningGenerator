@@ -64,7 +64,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
 
   function handleSaveChanges() {
     setOpenings("edit", getOpeningData())
-    dispatch({ type: "setInputName", payload: "" })
+    dispatch({ type: "saveChanges", payload: "" })
     setSnackBar({
       color: "success",
       open: true,

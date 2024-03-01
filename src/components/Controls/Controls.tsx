@@ -11,7 +11,7 @@ export interface DispatchController {
   payload: any
 }
 
-export type ActionController = "setOpening" | "edit" | "toggle" | "setInputName"
+export type ActionController = "setOpening" | "edit" | "toggle" | "setInputName" | "saveChanges"
 
 export type ControllerState = {
   currentView: ProxyIdentifier
@@ -41,6 +41,10 @@ function reducer(prevState: ControllerState, action: DispatchController): Contro
       break
     case "toggle":
       state.currentView = prevState.currentView === "generator" ? "library" : "generator"
+      state.openingIndex = NO_OPENING_SELECTED
+      state.inputName = ""
+      break
+    case "saveChanges":
       state.openingIndex = NO_OPENING_SELECTED
       state.inputName = ""
       break
