@@ -23,7 +23,7 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
       setOpenModal(true)
       return
     }
-    mediator.libraryProxy.loadOpening(opening)
+    mediator.generatorProxy.loadOpening(opening)
     mediator.switchProxy()
     dispatch({ type: "edit", payload: { name: opening.name, index: opening.index } })
   }
@@ -102,7 +102,7 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
             Current opening not saved
           </Typography>
           <Typography id="modal-desc" textColor="text.tertiary">
-            Loading this opening will discard the changes on the opening that is currently beeing edited
+            Loading this opening will discard the opening that is currently being edited
           </Typography>
           <Button color="neutral" sx={{ mt: 2, mr: 2, width: "25%" }} size="lg" onClick={handleContinue}>
             Continue

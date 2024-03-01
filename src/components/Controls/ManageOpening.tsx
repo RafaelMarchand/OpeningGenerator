@@ -53,7 +53,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     setSnackBar({
       color: "success",
       open: true,
-      message: `Opening renamed to "${state.inputName}"`
+      message: `Opening renamed to ${state.inputName}`
     })
   }
 
@@ -62,16 +62,21 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     dispatch({ type: "setOpening", payload: { index: -1, name: "" } })
   }
 
-  function handleEdit() {
+  function handleSaveChanges() {
     setOpenings("edit", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
+    setSnackBar({
+      color: "success",
+      open: true,
+      message: "Opening saved"
+    })
   }
 
   function handleExport() {
     setSnackBar({
       color: "primary",
       open: true,
-      message: `Not supported yet"`
+      message: "Not supported yet"
     })
   }
 
@@ -112,7 +117,12 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
           <>
             {state.openingIndex !== NO_OPENING_SELECTED ? (
               <>
-                <Button color="success" onClick={handleEdit} sx={{ fontSize: "sm" }} fullWidth size="lg">
+                <Button
+                  color="success"
+                  onClick={handleSaveChanges}
+                  sx={{ fontSize: "sm" }}
+                  fullWidth
+                  size="lg">
                   Save Changes
                 </Button>
                 <Button color="neutral" onClick={handleReset} fullWidth size="lg">

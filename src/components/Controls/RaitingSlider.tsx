@@ -51,7 +51,6 @@ function RaitingSlider({ text, dispatchOptions, action, className }: Props) {
         <Box className={className} sx={{ width: 300, pr: 2.5, pl: 1, m: 0 }}>
           <Slider
             sx={{ m: 0 }}
-            getAriaLabel={() => "Temperature range"}
             value={range}
             variant="solid"
             onChange={handleRaitingRange}
