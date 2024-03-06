@@ -1,6 +1,6 @@
 import { Box, Slider, StyledEngineProvider, Typography } from "@mui/joy"
 import { Dispatch, useState } from "react"
-import { DEFAULT_OPTIONS, DispatchParams, RAITING_RANGES, reducerAction } from "./Configuration"
+import { DEFAULT_OPTIONS, DispatchParams, RATING_RANGES, reducerAction } from "./Configuration"
 import "../../assets/sliderOverride.css"
 
 const RATITNG_LABELS = [0, 1000, 1600, 2000, 2500, 3000]
@@ -12,7 +12,7 @@ interface Props {
   className: string
 }
 
-function RaitingSlider({ text, dispatchOptions, action, className }: Props) {
+export default function RatingSlider({ text, dispatchOptions, action, className }: Props) {
   const [range, setRange] = useState<number[]>([
     DEFAULT_OPTIONS.rangeOpponent[0],
     DEFAULT_OPTIONS.rangeOpponent[1]
@@ -24,18 +24,18 @@ function RaitingSlider({ text, dispatchOptions, action, className }: Props) {
     if (activeThumb === 0) {
       if (Array.isArray(range)) {
         if (range[0] === range[1]) {
-          const index = RAITING_RANGES.indexOf(range[0]) - 1
+          const index = RATING_RANGES.indexOf(range[0]) - 1
           if (index >= 0) {
-            setRange([RAITING_RANGES[index], range[1]])
+            setRange([RATING_RANGES[index], range[1]])
           }
         }
       }
     } else {
       if (Array.isArray(range)) {
         if (range[0] === range[1]) {
-          const index = RAITING_RANGES.indexOf(range[0]) + 1
-          if (index < RAITING_RANGES.length) {
-            setRange([range[0], RAITING_RANGES[index]])
+          const index = RATING_RANGES.indexOf(range[0]) + 1
+          if (index < RATING_RANGES.length) {
+            setRange([range[0], RATING_RANGES[index]])
           }
         }
       }
@@ -55,11 +55,11 @@ function RaitingSlider({ text, dispatchOptions, action, className }: Props) {
             variant="solid"
             onChange={handleRaitingRange}
             valueLabelDisplay="auto"
-            min={RAITING_RANGES[0]}
-            max={RAITING_RANGES[RAITING_RANGES.length - 1]}
+            min={RATING_RANGES[0]}
+            max={RATING_RANGES[RATING_RANGES.length - 1]}
             step={null}
             disableSwap
-            marks={RAITING_RANGES.map((range) => {
+            marks={RATING_RANGES.map((range) => {
               if (RATITNG_LABELS.includes(range)) {
                 return { value: range, label: `${range}` }
               }
@@ -71,5 +71,3 @@ function RaitingSlider({ text, dispatchOptions, action, className }: Props) {
     </StyledEngineProvider>
   )
 }
-
-export default RaitingSlider

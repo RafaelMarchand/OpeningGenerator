@@ -1,6 +1,6 @@
 import { Button, Select, Stack, Switch, Typography, Option, Divider, Box } from "@mui/joy"
 import { SyntheticEvent, useReducer } from "react"
-import RaitingSlider from "./RaitingSlider"
+import RatingSlider from "./RatingSlider"
 import { Color } from "../../common/utils"
 import Mediator from "../../common/Mediator"
 
@@ -29,7 +29,7 @@ export interface DispatchParams {
   payload: any
 }
 
-export const RAITING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500, 3000]
+export const RATING_RANGES = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500, 3000]
 
 export const DEFAULT_OPTIONS: Options = {
   color: "white",
@@ -37,8 +37,8 @@ export const DEFAULT_OPTIONS: Options = {
   maxLineSpread: 3,
   randomness: true,
   rareRepertoire: false,
-  rangeOpeningMoves: [RAITING_RANGES[4], RAITING_RANGES[6]],
-  rangeOpponent: [RAITING_RANGES[4], RAITING_RANGES[6]]
+  rangeOpeningMoves: [RATING_RANGES[4], RATING_RANGES[6]],
+  rangeOpponent: [RATING_RANGES[4], RATING_RANGES[6]]
 }
 
 function reducer(state: Options, action: DispatchParams): Options {
@@ -117,8 +117,8 @@ export default function Configuration() {
           <Option value={5}>5</Option>
         </Select>
       </Box>
-      <RaitingSlider
-        className="raitingOpp"
+      <RatingSlider
+        className="ratingOpp"
         text="Rating"
         dispatchOptions={dispatchOptions}
         action={"rangeOpponent"}
@@ -143,8 +143,8 @@ export default function Configuration() {
           <Option value="b">black</Option>
         </Select>
       </Box>
-      <RaitingSlider
-        className="raitingRep"
+      <RatingSlider
+        className="ratingRep"
         text="Rating"
         dispatchOptions={dispatchOptions}
         action={"rangeOpeningMoves"}

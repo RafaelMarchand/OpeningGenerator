@@ -50,7 +50,7 @@ const steps = [
   },
   {
     selector: ".configuration",
-    content: "Settings for the opening generator based on the lichess player data"
+    content: "Settings for the opening generator based on lichess player data"
   },
   {
     selector: ".depth",
@@ -61,7 +61,7 @@ const steps = [
     content: "Limits responses for each position."
   },
   {
-    selector: ".raitingOpp",
+    selector: ".ratingOpp",
     content: "Rating range of lichess data that is considered for responses"
   },
   {
@@ -69,7 +69,7 @@ const steps = [
     content: "Color to generate repertoire for "
   },
   {
-    selector: ".raitingRep",
+    selector: ".ratingRep",
     content: "Rating range of lichess data that is considered for repertoire"
   },
   {

@@ -9,6 +9,13 @@ export type Result = {
   move: string
 }
 
+// onmessage = function (e) {
+//   const [position, options] = e.data
+//   nextMoves(position, options).then((result) => {
+//     postMessage(result)
+//   })
+// }
+
 export async function nextMoves(position: string, options: Options): Promise<Result[]> {
   const colorToMove = position.split(" ")[1] === "w" ? "white" : "black"
   const repertoireMove = options.color === colorToMove
@@ -84,7 +91,7 @@ function createMapToResults(position: string): (moves: Move[]) => Result[] {
     return moves.map((move) => {
       const chess = new Chess()
       chess.load(position)
-      chess.move(move.uci)
+      chess.move(move.san)
       return {
         fen: chess.fen(),
         move: move.san
@@ -97,12 +104,14 @@ function createMapToResults(position: string): (moves: Move[]) => Result[] {
 function createChooseMove(repertoireMove: boolean, randomness: boolean, limit: number): (moves: Move[]) => Move[] {
   if (repertoireMove && randomness) {
     return function randomMove(moves: Move[]): Move[] {
+      if (moves.length === 0) return []
       const index = Math.floor(Math.random() * moves.length)
       return [moves[index]]
     }
   }
   if (repertoireMove) limit = 1
   return function sortAndLimitMoves(moves: Move[]): Move[] {
+    if (moves.length === 0) return []
     moves.sort((a: Move, b: Move) => b.weigth - a.weigth)
     if (moves.length > limit) {
       return moves.slice(0, limit)

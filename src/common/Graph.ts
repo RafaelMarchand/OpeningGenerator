@@ -22,9 +22,9 @@ interface GraphMethods {
 export const GRAPH_DRAWR_OPTIONS = {
   width: 1000,
   height: 500,
-  nodeRadius: 5,
-  nodeRadiusHover: 10,
-  nodeRadiusFocus: 10,
+  nodeRadius: 4,
+  nodeRadiusHover: 6,
+  nodeRadiusFocus: 6,
   style: {
     borderRadius: "0.3rem",
     backgroundColor: "black",

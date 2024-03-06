@@ -141,7 +141,8 @@ export default function GraphPopUps({ graphRef }: Props) {
             position: "absolute",
             left: `${popUpPosition.x}px`,
             top: `${popUpPosition.y}px`,
-            zIndex: "1"
+            zIndex: "1",
+            overflow: "hidden"
           }}>
           {state.showBoard && <Chessground config={config} width={BOARD_SIZE} height={BOARD_SIZE} />}
           {state.showRemoveButton && (

@@ -31,6 +31,8 @@ export default class Mediator extends Observable {
   }
 
   initialize(boardRef: Ref, graphRef: Ref) {
+    this.generatorProxy.resetGraph()
+    this.libraryProxy.resetGraph()
     this.board = new Board(boardRef)
     this.graph = new Graph(graphRef)
 

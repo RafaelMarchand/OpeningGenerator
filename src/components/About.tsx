@@ -12,7 +12,7 @@ export default function About() {
       <Typography color="neutral" level="h4">
         Release Alpha 0.1
       </Typography>
-      <Box sx={{ width: "50%" }}>
+      <Box sx={{ width: "80%" }}>
         This first release contains the bare minimum user interface combined with a simple algorithm that
         generates openings based on the{" "}
         <a href="https://lichess.org/api#tag/Opening-Explorer/operation/openingExplorerMaster">
@@ -34,8 +34,9 @@ export default function About() {
         <ListItem>Export opening as PGN</ListItem>
         <ListItem>Improved algorithm to generate openings</ListItem>
         <ListItem>Advanced settings to have more control over the generator</ListItem>
+        <ListItem>Option to favor forcing lines</ListItem>
         <ListItem>
-          Connect your Chess.com/Lichess account to take into consideration your current opening moves and
+          Connect your Chess.com/Lichess account to take your current opening moves into consideration and
           generate an opening around them
         </ListItem>
       </List>
