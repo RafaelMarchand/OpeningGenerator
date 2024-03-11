@@ -53,11 +53,10 @@ export async function movesPlayers(position: string, range: number[], moveCount:
   params.append("ratings", ratingRange)
   params.append("fen", position)
   params.append("moves", String(moveCount))
-  console.log("fetching")
+  //console.log("start")
   const result = await fetch(`https://explorer.lichess.ovh/lichess?${params.toString()}`, {method: "GET"})
     .then((response) => response.json())
     .catch((error) => console.log(error))
-  console.log("done")
-
+   // console.log("done")
   return result
 }

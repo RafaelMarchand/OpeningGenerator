@@ -26,7 +26,6 @@ export const GRAPH_DRAWR_OPTIONS = {
   nodeRadiusHover: 6,
   nodeRadiusFocus: 6,
   style: {
-    borderRadius: "0.3rem",
     backgroundColor: "black",
     nodeBorder: "white",
     edgeWidth: 5, // first hsl value to determine color

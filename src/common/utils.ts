@@ -6,17 +6,12 @@ export type Color = "black" | "white"
 
 export type Result = {
   fen: string
+  prevFen: string
   move: string
+  depth: number
 }
 
-// onmessage = function (e) {
-//   const [position, options] = e.data
-//   nextMoves(position, options).then((result) => {
-//     postMessage(result)
-//   })
-// }
-
-export async function nextMoves(position: string, options: Options): Promise<Result[]> {
+export async function nextMoves(position: string, options: Options, depth: number): Promise<Result[]> {
   const colorToMove = position.split(" ")[1] === "w" ? "white" : "black"
   const repertoireMove = options.color === colorToMove
   const steps = []
@@ -28,7 +23,7 @@ export async function nextMoves(position: string, options: Options): Promise<Res
   steps.push(createWeightFunction(repertoireMove, options.rareRepertoire))
   steps.push(repertoireMove ? candidateMovesRepertoire : candidateMovesOpponent)
   steps.push(createChooseMove(repertoireMove, options.randomness, options.maxLineSpread))
-  steps.push(createMapToResults(position))
+  steps.push(createMapToResults(position, depth))
 
   return steps.reduce((acc: any, fn: any) => {
     return fn(acc)
@@ -86,7 +81,7 @@ function createWeightFunction(repertoir: boolean, rare: boolean) {
   }
 }
 
-function createMapToResults(position: string): (moves: Move[]) => Result[] {
+function createMapToResults(position: string, depth: number): (moves: Move[]) => Result[] {
   return function mapToPositions(moves: Move[]): Result[] {
     return moves.map((move) => {
       const chess = new Chess()
@@ -94,7 +89,9 @@ function createMapToResults(position: string): (moves: Move[]) => Result[] {
       chess.move(move.san)
       return {
         fen: chess.fen(),
-        move: move.san
+        prevFen: position,
+        move: move.san,
+        depth: depth
       }
     })
   }

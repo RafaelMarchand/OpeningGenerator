@@ -78,19 +78,22 @@ function reducer(prevState: GraphPopUpsState, action: DispatchGraphPopUp): Graph
 
 const OFFSET_NODE_POPUP = 15
 const BOARD_SIZE = 120
+const REMOVE_BUTTON_HEIGHT = 40
 
-function getPosition(position: Position, graphRef: RefObject<HTMLDivElement>): Position {
+function getPosition(state: GraphPopUpsState, graphRef: RefObject<HTMLDivElement>): Position {
   if (!graphRef.current) return { x: 0, y: 0 }
-  // legacy code but css is tricky, might need in future
-  //const { left, top } = graphRef.current!.getBoundingClientRect()
-  let posX = position.x + OFFSET_NODE_POPUP
-  let posY = position.y + OFFSET_NODE_POPUP
+  let posX = state.position.x + OFFSET_NODE_POPUP
+  let posY = state.position.y + OFFSET_NODE_POPUP
 
-  if (position.x + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.width) {
-    posX = position.x - OFFSET_NODE_POPUP - BOARD_SIZE
+  if (state.position.x + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.width) {
+    posX = state.position.x - OFFSET_NODE_POPUP - BOARD_SIZE
   }
-  if (position.y + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.height) {
-    posY = position.y - OFFSET_NODE_POPUP - BOARD_SIZE
+  if (state.position.y + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.height) {
+    if (state.showRemoveButton) {
+      posY = state.position.y - OFFSET_NODE_POPUP - REMOVE_BUTTON_HEIGHT
+    } else {
+      posY = state.position.y - OFFSET_NODE_POPUP - BOARD_SIZE
+    }
   }
   return {
     x: posX,
@@ -103,7 +106,7 @@ const buttonDelayHandler = new DelayHandler()
 
 export default function GraphPopUps({ graphRef }: Props) {
   const [state, dispatch] = useReducer(reducer, DEFAULT_GRAPH_POPUPS)
-  const popUpPosition = getPosition(state.position, graphRef)
+  const popUpPosition = getPosition(state, graphRef)
   const config = {
     fen: state.fen
   }
