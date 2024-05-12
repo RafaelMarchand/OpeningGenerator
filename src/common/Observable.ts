@@ -1,6 +1,6 @@
 type Observer = {
-  name: string
-  callback: any
+  name: Symbol
+  callback: Function
 }
 
 export default class Observable {
@@ -9,14 +9,16 @@ export default class Observable {
     this.observers = []
   }
 
-  listen(name: string, callback: any) {
-    const hasListener = this.observers.find((observer: Observer) => observer.name === name)
+  listen(name: Symbol, callback: Function) {
+    const hasListener = this.observers.find(
+      (observer: Observer) => observer.name === name && observer.callback.toString() === callback.toString()
+    )
     if (hasListener) return
     const listener = { name, callback }
     this.observers.push(listener)
   }
 
-  notify(name: string, ...args: any[]) {
+  notify(name: Symbol, ...args: any[]) {
     this.observers.forEach((observer: Observer) => {
       if (name === observer.name) {
         observer.callback(...args)
@@ -24,7 +26,7 @@ export default class Observable {
     })
   }
 
-  remove(name: string) {
+  remove(name: Symbol) {
     this.observers = this.observers.filter((observer: Observer) => {
       return observer.name !== name
     })

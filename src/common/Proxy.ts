@@ -1,18 +1,31 @@
 import Board from "./Board"
 import { NodePosition } from "./Graph"
-import GraphBuilder, { GraphType } from "./GraphBuilder"
+import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder"
 import Observable from "./Observable"
 import Graphology from "graphology"
 import { OpeningData } from "./useSaveOpening"
 
+export type ProxyIdentifier = "Generator" | "Library"
+
+export type State = {
+  fen: string
+  graph: GraphType
+  nextMoves: MoveData[]
+  currentProxy: ProxyIdentifier
+}
+
 export default class Proxy extends Observable {
+  static SHOW_POPUP = Symbol("showPopUp")
+  static STATE_CHANGE = Symbol("stateChange")
   graphBuilder: GraphBuilder
   boardPosition: string
+  identifier: ProxyIdentifier
 
-  constructor() {
+  constructor(identifier: ProxyIdentifier) {
     super()
     this.graphBuilder = new GraphBuilder()
     this.boardPosition = Board.STARTING_POSITION
+    this.identifier = identifier
   }
   // @ts-ignore
   boardMove(move: string, fen: string, prevFen: string) {}
@@ -20,7 +33,7 @@ export default class Proxy extends Observable {
   nodeClick(fen: string, _position: NodePosition, event: MouseEvent) {}
 
   nodeHover(fen: string, position: NodePosition, event: MouseEvent) {
-    this.notify("showPopUp", fen, position, event.type)
+    this.notify(Proxy.SHOW_POPUP, fen, position, event.type)
   }
 
   resetGraph() {
@@ -42,11 +55,12 @@ export default class Proxy extends Observable {
 
   updateUI() {
     this.graphBuilder.graph.setAttribute("focus", this.boardPosition)
-    this.notify(
-      "setState",
-      this.boardPosition,
-      this.graphBuilder.graph,
-      this.graphBuilder.getNextMoves(this.boardPosition)
-    )
+    const state: State = {
+      fen: this.boardPosition,
+      graph: this.graphBuilder.graph,
+      nextMoves: this.graphBuilder.getNextMoves(this.boardPosition),
+      currentProxy: this.identifier
+    }
+    this.notify(Proxy.STATE_CHANGE, state)
   }
 }

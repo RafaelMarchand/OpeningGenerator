@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useState } from "react"
 import Stack from "@mui/joy/Stack"
-import Mediator, { ProxyIdentifier } from "../common/Mediator"
+import Mediator from "../common/Mediator"
 import { Box, Typography } from "@mui/joy"
 import GraphPopUps from "./GraphPopUps"
-import { GraphType } from "../common/GraphBuilder"
+import { State } from "../common/Proxy"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -21,12 +21,12 @@ export default function Graph({ graphRef }: Props) {
   const [showText, setShowText] = useState<number>(TextState.Generator)
 
   useEffect(() => {
-    mediator.listen("stateChange", (graph: GraphType, proxyId: ProxyIdentifier) => {
+    mediator.listen(Mediator.STATE_CHANGE, ({ graph, currentProxy }: State) => {
       if (graph.size === 0) {
-        if (proxyId === "generator") {
+        if (currentProxy === "Generator") {
           setShowText(TextState.Generator)
         }
-        if (proxyId === "library") {
+        if (currentProxy === "Library") {
           setShowText(TextState.Library)
         }
       } else {
@@ -34,7 +34,7 @@ export default function Graph({ graphRef }: Props) {
       }
     })
     return () => {
-      mediator.remove("stateChange")
+      mediator.remove(Mediator.STATE_CHANGE)
     }
   }, [])
 

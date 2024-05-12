@@ -1,18 +1,17 @@
 import { RefObject } from "react"
 import Board from "./Board"
 import Observable from "./Observable"
-import { GraphType, MoveData } from "./GraphBuilder"
 import Graph, { NodePosition } from "./Graph"
 import GeneratorProxy from "./GeneratorProxy"
-import Proxy from "./Proxy"
+import Proxy, { State } from "./Proxy"
 import LibraryProxy from "./LibraryProxy"
 import { OpeningData } from "./useSaveOpening"
 
 export type Ref = RefObject<HTMLDivElement>
-export type ProxyIdentifier = "generator" | "library"
 
 export default class Mediator extends Observable {
   static instance: Mediator | null = null
+  static STATE_CHANGE = Symbol("stateChange")
   board: Board | undefined
   graph: Graph | undefined
   libraryProxy!: LibraryProxy
@@ -31,34 +30,31 @@ export default class Mediator extends Observable {
   }
 
   initialize(boardRef: Ref, graphRef: Ref) {
-    this.generatorProxy.resetGraph()
     this.libraryProxy.resetGraph()
+    this.generatorProxy.resetGraph()
     this.board = new Board(boardRef)
     this.graph = new Graph(graphRef)
 
-    this.board.listen("boardMove", (move: string, fen: string, prevFen: string) => {
+    this.board.listen(Board.BOARD_MOVE, (move: string, fen: string, prevFen: string) => {
       this.proxy.boardMove(move, fen, prevFen)
     })
 
-    this.graph.listen("nodeClick", (fen: string, position: NodePosition, event: MouseEvent) => {
+    this.graph.listen(Graph.NODE_CLICK, (fen: string, position: NodePosition, event: MouseEvent) => {
       this.proxy.nodeClick(fen, position, event)
     })
 
-    this.graph.listen("nodeHover", (fen: string, position: NodePosition, event: MouseEvent) => {
+    this.graph.listen(Graph.NODE_HOVER, (fen: string, position: NodePosition, event: MouseEvent) => {
       this.proxy.nodeHover(fen, position, event)
     })
-
     new Array<Proxy>(this.generatorProxy, this.libraryProxy).forEach((proxy: Proxy) => {
-      proxy.listen("setState", (fen: string, graph: GraphType, nextMoves: MoveData[]) => {
-        this.board!.setPosition(fen)
-        this.graph!.draw(graph)
-        const currentProxy: ProxyIdentifier = this.proxy === this.generatorProxy ? "generator" : "library"
-        this.notify("positionChange", nextMoves)
-        this.notify("stateChange", graph, currentProxy)
+      proxy.listen(Proxy.STATE_CHANGE, (state: State) => {
+        this.board!.setPosition(state.fen)
+        this.graph!.draw(state.graph)
+        this.notify(Mediator.STATE_CHANGE, state)
       })
     })
 
-    this.libraryProxy.listen("editOpening", (opening: OpeningData) => {
+    this.libraryProxy.listen(LibraryProxy.EDIT_OPENING, (opening: OpeningData) => {
       this.switchProxy()
       this.proxy.loadOpening(opening)
     })

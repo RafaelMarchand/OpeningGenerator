@@ -6,6 +6,7 @@ import * as cg from "chessground/types"
 import Observable from "./Observable"
 
 export default class Board extends Observable {
+  static BOARD_MOVE = Symbol("boardMove")
   static STARTING_POSITION: string = (() => {
     const chess = new Chess()
     return chess.fen()
@@ -51,7 +52,7 @@ export default class Board extends Observable {
   handleMove(move: string) {
     const [position, san] = this.validateMove(move)
     if (position !== this.getPosition()) {
-      this.notify("boardMove", san, position, this.getPosition())
+      this.notify(Board.BOARD_MOVE, san, position, this.getPosition())
     } else {
       this.setPosition(position)
     }

@@ -44,6 +44,8 @@ const GRAPH_METHODS: GraphMethods = {
 }
 
 export default class Graph extends Observable {
+  static NODE_CLICK = Symbol("nodeClick")
+  static NODE_HOVER = Symbol("nodeHover")
   graphDrawer: GraphDrawer
 
   constructor(ref: RefObject<HTMLDivElement>) {
@@ -53,9 +55,9 @@ export default class Graph extends Observable {
       ref.current,
       GRAPH_DRAWR_OPTIONS,
       (key: string, nodePosition: NodePosition, event: MouseEvent) =>
-        this.notify("nodeClick", key, nodePosition, event),
+        this.notify(Graph.NODE_CLICK, key, nodePosition, event),
       (key: string, nodePosition: NodePosition, event: MouseEvent) =>
-        this.notify("nodeHover", key, nodePosition, event)
+        this.notify(Graph.NODE_HOVER, key, nodePosition, event)
     )
   }
 

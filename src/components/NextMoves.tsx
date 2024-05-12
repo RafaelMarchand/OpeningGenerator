@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Button, Stack, ToggleButtonGroup, Typography } from "@mui/joy"
 import { MoveData } from "../common/GraphBuilder"
 import Mediator from "../common/Mediator"
+import { State } from "../common/Proxy"
 
 const mediator = new Mediator()
 
@@ -10,12 +11,12 @@ export default function NextMoves() {
   const [selected, setSelected] = useState<number>(0)
 
   useEffect(() => {
-    mediator.listen("positionChange", (moves: MoveData[]) => {
-      setMoves(moves)
+    mediator.listen(Mediator.STATE_CHANGE, ({ nextMoves }: State) => {
+      setMoves(nextMoves)
       setSelected(0)
     })
     return () => {
-      mediator.remove("positionChange")
+      mediator.remove(Mediator.STATE_CHANGE)
     }
   }, [])
 

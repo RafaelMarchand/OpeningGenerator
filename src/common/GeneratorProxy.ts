@@ -5,6 +5,7 @@ import { Result, nextMoves } from "./utils"
 
 const MOUSE_LEFT = 0
 const MOUSE_RIGHT = 2
+const IDENTIFIER = "Generator"
 
 export default class GeneratorProxy extends Proxy {
   countRequests: number
@@ -13,7 +14,7 @@ export default class GeneratorProxy extends Proxy {
   requestQueue: any[]
   options: Options
   constructor() {
-    super()
+    super(IDENTIFIER)
     this.countRequests = 0
     this.countResults = 0
     this.isGenerating = false
@@ -103,7 +104,7 @@ export default class GeneratorProxy extends Proxy {
       this.updateUI()
     }
     if (event.button === MOUSE_RIGHT) {
-      this.notify("showPopUp", fen, position, event.type)
+      this.notify(Proxy.SHOW_POPUP, fen, position, event.type)
     }
   }
 }
