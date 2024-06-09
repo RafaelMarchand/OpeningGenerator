@@ -26,7 +26,7 @@ function Board({ boardRef }: Props) {
 
   return (
     <Stack
-      sx={{ width: "80%" }}
+      sx={{ width: "100%" }}
       ref={boardAreaRef}
       direction="row"
       justifyContent="center"
