@@ -104,7 +104,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
         onChange={(event) => dispatch({ type: "setInputName", payload: event.target.value })}
       />
       <Stack direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={1}>
-        {state.currentView === "library" ? (
+        {state.currentView === "Library" ? (
           <>
             <Button onClick={handleRename} fullWidth size="lg">
               Rename

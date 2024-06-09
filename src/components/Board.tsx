@@ -2,7 +2,6 @@ import { RefObject, useEffect, useRef, useState } from "react"
 import Stack from "@mui/joy/Stack"
 // @ts-ignore
 import { ResizableBox } from "react-resizable"
-import { Box } from "@mui/joy"
 
 import "../assets/boardResize.css"
 import "../../node_modules/react-resizable/css/styles.css"
@@ -40,12 +39,12 @@ function Board({ boardRef }: Props) {
         height={400}
         minConstraints={[300, 300]}
         maxConstraints={[maxSize, maxSize]}
-        resizeHandles={["se"]}>
-        <Box
+        resizeHandles={["se"]}
+        transformScale={1}>
+        <div
           className="T2-board"
           ref={boardRef}
-          sx={{ width: "100%", height: "100%", borderRadius: "2rem" }}
-        />
+          style={{ width: "100%", height: "100%", borderRadius: "2rem" }}></div>
       </ResizableBox>
     </Stack>
   )
