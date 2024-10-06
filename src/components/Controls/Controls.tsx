@@ -1,11 +1,12 @@
 import { Button, Stack, ToggleButtonGroup } from "@mui/joy"
 import Configuration from "./Configuration"
-import { useReducer } from "react"
+import { useContext, useReducer } from "react"
 import Openings from "./Openings"
 import Mediator from "../../common/Mediator"
 import ManageOpening from "./ManageOpening"
 import useSaveOpening from "../../common/useSaveOpening"
 import { ProxyIdentifier } from "../../common/Proxy"
+import { SnackBarContext } from "../SnackBarProvider"
 
 export interface DispatchController {
   type: ActionController
@@ -64,6 +65,7 @@ const DEFAULT_CONTROL_STATE: ControllerState = {
 export default function Controls() {
   const [state, dispatch] = useReducer(reducer, DEFAULT_CONTROL_STATE)
   const [openings, setOpenings] = useSaveOpening()
+  const setSnackBar = useContext(SnackBarContext)!
 
   return (
     <Stack
@@ -83,6 +85,14 @@ export default function Controls() {
           variant="solid"
           value={String(state.currentView)}
           onChange={(_event, newValue) => {
+            if (state.currentView === "Generator" && mediator.generatorProxy.isGenerating) {
+              setSnackBar({
+                color: "primary",
+                open: true,
+                message: "Can not switch to Library while generating"
+              })
+              return
+            }
             if (newValue) {
               dispatch({ type: "toggle", payload: {} })
               mediator.switchProxy()
@@ -90,16 +100,29 @@ export default function Controls() {
             }
           }}>
           <Button
-            className="T1-createTab"
-            value="generator"
-            sx={{ borderBottomRightRadius: "0", borderBottomLeftRadius: "0" }}
+            value="Generator"
+            sx={{
+              borderBottomRightRadius: "0",
+              borderBottomLeftRadius: "0",
+              backgroundColor: state.currentView === "Generator" ? "#212121" : "",
+              "&:hover": {
+                backgroundColor: ""
+              }
+            }}
             fullWidth>
             Create Opening
           </Button>
           <Button
-            value="library"
+            value="Library"
             fullWidth
-            sx={{ borderBottomRightRadius: "0", borderBottomLeftRadius: "0" }}>
+            sx={{
+              borderBottomRightRadius: "0",
+              borderBottomLeftRadius: "0",
+              backgroundColor: state.currentView !== "Generator" ? "#212121" : "",
+              "&:hover": {
+                backgroundColor: ""
+              }
+            }}>
             Library
           </Button>
         </ToggleButtonGroup>

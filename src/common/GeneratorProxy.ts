@@ -11,7 +11,7 @@ export default class GeneratorProxy extends Proxy {
   countRequests: number
   countResults: number
   isGenerating: boolean
-  requestQueue: any[]
+  requestQueue: Result[]
   options: Options
   constructor() {
     super(IDENTIFIER)
@@ -27,33 +27,8 @@ export default class GeneratorProxy extends Proxy {
     this.updateUI()
   }
 
-  // generate(options: Options = DEFAULT_OPTIONS) {
-  //   console.log()
-  //   if (this.countRequests !== this.countResults) return
-  //   console.log("in")
-  //   const generate = (results: Result[], depth: number, prevFen: string) => {
-  //     for (const result of results) {
-  //       if (result.move !== "") {
-  //         this.graphBuilder.addMove(result.move, result.fen, prevFen)
-  //         this.boardPosition = result.fen
-  //         this.updateUI()
-  //       }
-  //       this.countRequests++
-
-  //       nextMoves(result.fen, options).then((nextPositions) => {
-  //         if (nextPositions.length === 0 && result.move === "") {
-  //         }
-  //         if (depth < options.depth) {
-  //           generate(nextPositions, depth + 1, result.fen)
-  //         }
-  //         this.countResults++
-  //       })
-  //     }
-  //   }
-  //   generate([{ fen: this.boardPosition, move: "" }], 0, this.boardPosition)
-  // }
-
   generate(options: Options = DEFAULT_OPTIONS) {
+    this.isGenerating = true
     this.options = options
     this.handleResults([
       {
@@ -73,21 +48,25 @@ export default class GeneratorProxy extends Proxy {
         this.updateUI()
       }
       if (result.depth < this.options.depth) {
+        this.countRequests++
         this.requestQueue.push({
-          result: {
-            fen: result.fen,
-            prevFen: result.prevFen,
-            depth: ++result.depth,
-            move: result.move
-          },
-          options: this.options
+          fen: result.fen,
+          prevFen: result.prevFen,
+          depth: ++result.depth,
+          move: result.move
         })
       }
     }
-    if (this.requestQueue.length > 0) {
-      const request = this.requestQueue.pop()
-      nextMoves(request.result.fen, request.options, request.result.depth).then((results) => {
+    const request = this.requestQueue.pop()
+    if (request) {
+      nextMoves(request.fen, this.options, request.depth).then((results) => {
         this.handleResults(results)
+        this.countResults++
+        if (this.countRequests === this.countResults) {
+          this.isGenerating = false
+          this.countRequests = 0
+          this.countResults = 0
+        }
       })
     }
   }

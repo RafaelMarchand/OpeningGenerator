@@ -18,7 +18,7 @@ export async function nextMoves(position: string, options: Options, depth: numbe
 
   const result = await movesPlayers(position, options.rangeOpponent)
 
-  steps.push(createPrepare(repertoireMove, options.rareRepertoire))
+  steps.push(createPrepare())
   steps.push(createAddWinningChances(colorToMove))
   steps.push(createWeightFunction(repertoireMove, options.rareRepertoire))
   steps.push(repertoireMove ? candidateMovesRepertoire : candidateMovesOpponent)
@@ -30,10 +30,8 @@ export async function nextMoves(position: string, options: Options, depth: numbe
   }, result)
 }
 
-function createPrepare(repertoireMove: boolean, rareRepertoire: boolean): (result: DataBaseResult) => Move[] {
+function createPrepare(): (result: DataBaseResult) => Move[] {
   return function prepare(result: DataBaseResult): Move[] {
-    if (repertoireMove && !rareRepertoire) return result.moves
-
     const gameCount = result.black + result.white + result.draws
     result.moves.forEach((move) => {
       let movesPlayed = move.white + move.black + move.draws
