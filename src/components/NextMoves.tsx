@@ -44,8 +44,9 @@ export default function NextMoves() {
               onClick={() => mediator.proxy.playNextMove(move.fen)}
               onMouseOver={() => {
                 setSelected(index)
+                mediator.board?.showArrow(moves[index])
               }}>
-              {move.move}
+              {move.move.san}
             </Button>
           )
         })}

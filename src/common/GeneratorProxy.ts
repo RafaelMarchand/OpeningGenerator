@@ -1,5 +1,6 @@
 import { DEFAULT_OPTIONS, Options } from "../components/Controls/Configuration"
 import { NodePosition } from "./Graph"
+import { MoveData } from "./GraphBuilder"
 import Proxy from "./Proxy"
 import { Result, nextMoves } from "./utils"
 
@@ -34,7 +35,7 @@ export default class GeneratorProxy extends Proxy {
       {
         fen: this.boardPosition,
         prevFen: this.boardPosition,
-        move: "",
+        moveData: null,
         depth: 0
       }
     ])
@@ -42,8 +43,8 @@ export default class GeneratorProxy extends Proxy {
 
   handleResults(results: Result[]) {
     for (const result of results) {
-      if (result.move !== "") {
-        this.graphBuilder.addMove(result.move, result.fen, result.prevFen)
+      if (result.moveData) {
+        this.graphBuilder.addMove(result.moveData, result.prevFen)
         this.boardPosition = result.fen
         this.updateUI()
       }
@@ -53,7 +54,7 @@ export default class GeneratorProxy extends Proxy {
           fen: result.fen,
           prevFen: result.prevFen,
           depth: ++result.depth,
-          move: result.move
+          moveData: result.moveData
         })
       }
     }
@@ -71,9 +72,9 @@ export default class GeneratorProxy extends Proxy {
     }
   }
 
-  boardMove(move: string, fen: string, prevFen: string) {
-    this.graphBuilder.addMove(move, fen, prevFen)
-    this.boardPosition = fen
+  boardMove(moveData: MoveData, prevFen: string) {
+    this.graphBuilder.addMove(moveData, prevFen)
+    this.boardPosition = moveData.fen
     this.updateUI()
   }
 

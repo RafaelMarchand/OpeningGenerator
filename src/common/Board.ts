@@ -4,6 +4,8 @@ import { Config } from "chessground/config"
 import { Chess } from "chess.js"
 import * as cg from "chessground/types"
 import Observable from "./Observable"
+import { Api } from "chessground/api"
+import { MoveData } from "./GraphBuilder"
 
 export default class Board extends Observable {
   static BOARD_MOVE = Symbol("boardMove")
@@ -12,8 +14,8 @@ export default class Board extends Observable {
     return chess.fen()
   })()
 
-  config: Config | undefined
-  chessground: any
+  config: Config
+  chessground: Api
 
   constructor(ref: RefObject<HTMLDivElement>) {
     super()
@@ -28,6 +30,16 @@ export default class Board extends Observable {
     this.chessground = Chessground(ref.current!, this.config)
   }
 
+  showArrow(move: MoveData) {
+    this.chessground.setShapes([
+      {
+        brush: "blue",
+        orig: move.move.uci.slice(0, 2) as cg.Key,
+        dest: move.move.uci.slice(2, 4) as cg.Key
+      }
+    ])
+  }
+
   setPosition(position: string) {
     this.config!.fen = position
     this.chessground.set(this.config)
@@ -37,24 +49,24 @@ export default class Board extends Observable {
     return this.config!.fen!
   }
 
-  validateMove(move: string): string[] {
+  validateMove(move: string): MoveData {
     const currentPosition = this.getPosition()
     try {
       const chess = new Chess()
       chess.load(currentPosition)
-      const { san } = chess.move(move)
-      return [chess.fen(), san]
+      const { san, from, to } = chess.move(move)
+      return { fen: chess.fen(), move: { san: san, uci: from + to } }
     } catch (error) {
-      return [currentPosition, move]
+      return { fen: currentPosition, move: { san: "", uci: "" } }
     }
   }
 
-  handleMove(move: string) {
-    const [position, san] = this.validateMove(move)
-    if (position !== this.getPosition()) {
-      this.notify(Board.BOARD_MOVE, san, position, this.getPosition())
+  handleMove(uci: string) {
+    const moveData = this.validateMove(uci)
+    if (moveData.fen !== this.getPosition()) {
+      this.notify(Board.BOARD_MOVE, moveData, this.getPosition())
     } else {
-      this.setPosition(position)
+      this.setPosition(moveData.fen)
     }
   }
 

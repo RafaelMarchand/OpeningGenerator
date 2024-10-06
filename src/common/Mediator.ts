@@ -6,6 +6,7 @@ import GeneratorProxy from "./GeneratorProxy"
 import Proxy, { State } from "./Proxy"
 import LibraryProxy from "./LibraryProxy"
 import { OpeningData } from "./useSaveOpening"
+import { MoveData } from "./GraphBuilder"
 
 export type Ref = RefObject<HTMLDivElement>
 
@@ -35,8 +36,8 @@ export default class Mediator extends Observable {
     this.board = new Board(boardRef)
     this.graph = new Graph(graphRef)
 
-    this.board.listen(Board.BOARD_MOVE, (move: string, fen: string, prevFen: string) => {
-      this.proxy.boardMove(move, fen, prevFen)
+    this.board.listen(Board.BOARD_MOVE, (moveData: MoveData, prevFen: string) => {
+      this.proxy.boardMove(moveData, prevFen)
     })
 
     this.graph.listen(Graph.NODE_CLICK, (fen: string, position: NodePosition, event: MouseEvent) => {

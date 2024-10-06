@@ -1,22 +1,26 @@
 import Graphology from "graphology"
 import Board from "./Board.js"
-import { Move } from "./lichessAPI.js"
 
 type NodeAttributes = {
   value: number
-  moves: Move[]
+  moves: MoveData[]
 }
 
 type EdgeAttributes = {
-  move: string
+  moveData: MoveData
 }
 
 type GraphAttributes = {
   focus: string
 }
 
+type Move = {
+  uci: string
+  san: string
+}
+
 export type MoveData = {
-  move: string
+  move: Move
   fen: string
 }
 
@@ -36,17 +40,17 @@ export default class GraphBuilder {
     this.graph.mergeNode(fen)
   }
 
-  addEdge(move: string, fen: string, prevFen: string) {
-    if (fen !== prevFen) {
-      this.graph.mergeEdge(prevFen, fen, { move: move })
+  addEdge(moveData: MoveData, prevFen: string) {
+    if (moveData.fen !== prevFen) {
+      this.graph.mergeEdge(prevFen, moveData.fen, { moveData })
     }
   }
 
-  addMove(move: string, fen: string, prevFen: string): string {
+  addMove(moveData: MoveData, prevFen: string): string {
     this.saved = false
-    this.addNode(fen)
-    this.addEdge(move, fen, prevFen)
-    return fen
+    this.addNode(moveData.fen)
+    this.addEdge(moveData, prevFen)
+    return moveData.fen
   }
 
   removeNode(fen: string): string {
@@ -70,7 +74,7 @@ export default class GraphBuilder {
   getNextMoves(fen: string): MoveData[] {
     const moves: MoveData[] = []
     this.graph.forEachOutEdge(fen, (_edge, attributes, _source, target) => {
-      moves.push({ move: attributes.move, fen: target })
+      moves.push({ move: attributes.moveData.move, fen: target })
     })
     return moves
   }

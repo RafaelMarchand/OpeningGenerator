@@ -4,6 +4,7 @@ import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder"
 import Observable from "./Observable"
 import Graphology from "graphology"
 import { OpeningData } from "./useSaveOpening"
+import { Move } from "./utils"
 
 export type ProxyIdentifier = "Generator" | "Library"
 
@@ -28,7 +29,7 @@ export default class Proxy extends Observable {
     this.identifier = identifier
   }
   // @ts-ignore
-  boardMove(move: string, fen: string, prevFen: string) {}
+  boardMove(moveData: MoveData, prevFen: string) {}
   // @ts-ignore
   nodeClick(fen: string, _position: NodePosition, event: MouseEvent) {}
 

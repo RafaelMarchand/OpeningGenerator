@@ -6,6 +6,7 @@ import DelayHandler from "../common/DelayHandler"
 import Mediator from "../common/Mediator"
 import Proxy from "../common/Proxy"
 import { GRAPH_DRAWR_OPTIONS } from "../common/Graph"
+import { Config } from "chessground/config"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -107,8 +108,10 @@ const buttonDelayHandler = new DelayHandler()
 export default function GraphPopUps({ graphRef }: Props) {
   const [state, dispatch] = useReducer(reducer, DEFAULT_GRAPH_POPUPS)
   const popUpPosition = getPosition(state, graphRef)
-  const config = {
-    fen: state.fen
+  const config: Config = {
+    fen: state.fen,
+    coordinates: false,
+    viewOnly: true
   }
 
   function mouseHandler(fen: string, position: Position, mouseEvent: MouseEvents) {

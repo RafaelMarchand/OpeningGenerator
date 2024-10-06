@@ -3,7 +3,7 @@ import Graphology from "graphology"
 import Board from "./Board.js"
 import Observable from "./Observable.js"
 import { GraphType } from "./GraphBuilder.js"
-// @ts-ignore
+// @ts-expect-error
 import GraphDrawer from "graph-drawer"
 
 export type NodePosition = {

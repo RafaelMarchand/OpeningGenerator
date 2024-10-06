@@ -15,11 +15,11 @@ export default class LibraryProxy extends Proxy {
     this.notify(LibraryProxy.EDIT_OPENING, opening)
   }
 
-  boardMove(move: string, fen: string, prevFen: string) {
+  boardMove(moveData: MoveData, prevFen: string) {
     const nextMoves = this.graphBuilder.getNextMoves(prevFen)
-    const match = nextMoves.find((moveData: MoveData) => moveData.move === move)
+    const match = nextMoves.find((nextMoveData: MoveData) => nextMoveData.move.san === moveData.move.san)
     if (match) {
-      this.boardPosition = fen
+      this.boardPosition = moveData.fen
     } else {
       this.boardPosition = prevFen
     }
