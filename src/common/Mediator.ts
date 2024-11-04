@@ -44,13 +44,13 @@ export default class Mediator extends Observable {
       this.proxy.nodeClick(fen, position, event)
     })
 
-    this.graph.listen(Graph.NODE_HOVER, (fen: string, position: NodePosition, event: MouseEvent) => {
+    this.graph.listen(Graph.NODE_HOVER, (fen: string | null, position: NodePosition | null, event: MouseEvent) => {
       this.proxy.nodeHover(fen, position, event)
     })
     new Array<Proxy>(this.generatorProxy, this.libraryProxy).forEach((proxy: Proxy) => {
       proxy.listen(Proxy.STATE_CHANGE, (state: State) => {
         this.board!.setPosition(state.fen)
-        this.graph!.draw(state.graph)
+        this.graph!.draw(state)
         this.notify(Mediator.STATE_CHANGE, state)
       })
     })

@@ -3,65 +3,95 @@ import Graphology from "graphology"
 import Board from "./Board.js"
 import Observable from "./Observable.js"
 import { GraphType } from "./GraphBuilder.js"
-// @ts-expect-error
-import GraphDrawer from "graph-drawer"
+import GraphDrawer, { GraphMethods, Config } from "graph-drawer"
+import { State } from "./Proxy.js"
+import { blue, green, grey } from "@mui/material/colors"
+
+export const GRAPH_SIZE = {
+  width: 1000,
+  height: 500
+}
 
 export type NodePosition = {
   x: number
   y: number
 }
 
-interface GraphMethods {
-  getNodeKeys: (graph: Graphology) => string[]
-  getOutEdgesKeys: (graph: Graphology, nodeKey: string) => string[]
-  getDestNodeKey: (graph: Graphology, edgeKey: string) => string
-  getNodeValue: (graph: Graphology, nodeKey: string) => number
-  getNodeFocus: (graph: Graphology, nodeKey: string) => boolean
-}
-
-export const GRAPH_DRAWR_OPTIONS = {
-  width: 1000,
-  height: 500,
-  nodeRadius: 4,
-  nodeRadiusHover: 6,
-  nodeRadiusFocus: 6,
-  style: {
-    backgroundColor: "black",
-    nodeBorder: "white",
-    edgeWidth: 5, // first hsl value to determine color
-    nodeColorPositive: 0,
-    nodeColorNegative: 240,
-    maxLightness: 4
-  }
-}
-
-const GRAPH_METHODS: GraphMethods = {
-  getNodeKeys: (graph: Graphology) => graph.mapNodes((key: string) => key),
-  getOutEdgesKeys: (graph: Graphology, nodeKey: string) => graph.mapOutEdges(nodeKey, (edge: any) => edge),
-  getDestNodeKey: (graph: Graphology, edgeKey: string) => graph.target(edgeKey),
-  getNodeValue: () => 0,
-  getNodeFocus: (graph: Graphology, nodeKey: string) => nodeKey === graph.getAttribute("focus")
+const graphMethods: GraphMethods<Graphology, null> = {
+  getNodeKeys: (graph) => graph.mapNodes((key) => key),
+  getDestNodeKeys: (graph, nodeKey) => graph.mapOutEdges(nodeKey, (_edge, _attributes, _source, target) => target),
+  getNodeAttribute: (_graph, _nodeKey) => null
 }
 
 export default class Graph extends Observable {
   static NODE_CLICK = Symbol("nodeClick")
   static NODE_HOVER = Symbol("nodeHover")
-  graphDrawer: GraphDrawer
+  graphDrawer: GraphDrawer<Graphology, null>
+  config: Config<null>
+  fen: string
 
   constructor(ref: RefObject<HTMLDivElement>) {
     super()
-    this.graphDrawer = new GraphDrawer(
-      GRAPH_METHODS,
-      ref.current,
-      GRAPH_DRAWR_OPTIONS,
-      (key: string, nodePosition: NodePosition, event: MouseEvent) =>
-        this.notify(Graph.NODE_CLICK, key, nodePosition, event),
-      (key: string, nodePosition: NodePosition, event: MouseEvent) =>
-        this.notify(Graph.NODE_HOVER, key, nodePosition, event)
-    )
+    this.config = {
+      width: GRAPH_SIZE.width,
+      height: GRAPH_SIZE.height,
+      backgroundColor: "black",
+      edgeWidth: 5,
+      nodeHasText: false,
+      maxArrangements: 50,
+      paddingGraph: 30,
+      nodeBorderColor: "white",
+      nodeColor: (key, attributes, clicked, mouseOver) => {
+        if (key === this.fen) {
+          return blue[700]
+        }
+        return grey[700]
+      },
+      nodeRadius: (key, _attributes, _clicked, mouseOver) => {
+        if (key === this.fen) {
+          return 10
+        }
+        return 7
+      },
+      nodeBorderWidth: (key, _attributes, _clicked, mouseOver) => {
+        if (key === "3" && mouseOver) {
+          return 10
+        }
+        return 2
+      },
+      edgeColor(srcNodeKey, destNodeKey, srcAttribute, destNodeAttribute, clicked, mouseOver) {
+        if (srcNodeKey === "3" && clicked) {
+          return "violet"
+        }
+        if (mouseOver) {
+          return "orange"
+        }
+        return "white"
+      },
+      nodeClick: (key, position, event, draw) => {
+        this.notify(Graph.NODE_CLICK, key, position, event)
+        //draw()
+      },
+      edgeClick(key, destNodeKey, event, draw) {
+        draw()
+      },
+      nodeHover: (key, position, event, draw) => {
+        this.notify(Graph.NODE_HOVER, key, position, event)
+        //draw()
+      },
+      edgeHover(key, destNodeKey, event, draw) {
+        draw()
+      },
+      styleCanvas: {
+        borderRadius: "0.3rem"
+      }
+    }
+    this.graphDrawer = new GraphDrawer(graphMethods, ref.current!, this.config)
+    this.fen = Board.STARTING_POSITION
   }
 
-  draw(graph: GraphType, rootNodes: string[] = [Board.STARTING_POSITION]) {
-    this.graphDrawer.drawGraph(graph, rootNodes)
+  draw(state: State, rootNodes: string[] = [Board.STARTING_POSITION]) {
+    this.fen = state.fen
+    this.graphDrawer.update(state.graph, rootNodes)
   }
 }

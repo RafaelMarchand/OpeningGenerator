@@ -81,6 +81,7 @@ export default class GeneratorProxy extends Proxy {
   nodeClick(fen: string, position: NodePosition, event: MouseEvent) {
     if (event.button === MOUSE_LEFT) {
       this.boardPosition = fen
+      this.notify(Proxy.SHOW_POPUP, fen, position, "click")
       this.updateUI()
     }
     if (event.button === MOUSE_RIGHT) {

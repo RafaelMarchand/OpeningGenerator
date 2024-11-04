@@ -4,7 +4,6 @@ import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder"
 import Observable from "./Observable"
 import Graphology from "graphology"
 import { OpeningData } from "./useSaveOpening"
-import { Move } from "./utils"
 
 export type ProxyIdentifier = "Generator" | "Library"
 
@@ -33,7 +32,7 @@ export default class Proxy extends Observable {
   // @ts-ignore
   nodeClick(fen: string, _position: NodePosition, event: MouseEvent) {}
 
-  nodeHover(fen: string, position: NodePosition, event: MouseEvent) {
+  nodeHover(fen: string | null, position: NodePosition | null, event: MouseEvent) {
     this.notify(Proxy.SHOW_POPUP, fen, position, event.type)
   }
 

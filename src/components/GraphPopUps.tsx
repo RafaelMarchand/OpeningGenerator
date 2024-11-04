@@ -5,8 +5,8 @@ import Board from "../common/Board"
 import DelayHandler from "../common/DelayHandler"
 import Mediator from "../common/Mediator"
 import Proxy from "../common/Proxy"
-import { GRAPH_DRAWR_OPTIONS } from "../common/Graph"
-import { Config } from "chessground/config"
+import { GRAPH_SIZE } from "../common/Graph"
+import { Config } from "@react-chess/chessground/node_modules/chessground/config"
 
 interface Props {
   graphRef: RefObject<HTMLDivElement>
@@ -17,14 +17,13 @@ type Position = {
   y: number
 }
 
-export interface DispatchGraphPopUp {
-  type: reducerAction
-  payload: any
-}
+type DispatchGraphPopUp =
+  | { type: "showButton"; payload: { fen: string; position: Position | null } }
+  | { type: "hideButton"; payload: {} }
+  | { type: "showBoard"; payload: { fen: string; position: Position | null } }
+  | { type: "hideBoard"; payload: {} }
 
-export type reducerAction = "showButton" | "hideButton" | "showBoard" | "hideBoard"
-
-export type GraphPopUpsState = {
+type GraphPopUpsState = {
   showBoard: boolean
   showRemoveButton: boolean
   fen: string
@@ -33,7 +32,8 @@ export type GraphPopUpsState = {
 
 enum MouseEvents {
   MouseUp = "mouseup",
-  MouseMove = "mousemove"
+  MouseMove = "mousemove",
+  Click = "click"
 }
 
 const DELAY_HIDE_REMOVE_BUTTON = 1000
@@ -57,7 +57,7 @@ function reducer(prevState: GraphPopUpsState, action: DispatchGraphPopUp): Graph
       state.showBoard = true
       state.showRemoveButton = false
       state.fen = action.payload.fen
-      state.position = action.payload.position
+      state.position = action.payload.position ?? prevState.position
       break
     case "hideBoard":
       if (!prevState.showBoard) return prevState
@@ -67,7 +67,7 @@ function reducer(prevState: GraphPopUpsState, action: DispatchGraphPopUp): Graph
       state.showBoard = false
       state.showRemoveButton = true
       state.fen = action.payload.fen
-      state.position = action.payload.position
+      state.position = action.payload.position ?? prevState.position
       break
     case "hideButton":
       if (!prevState.showRemoveButton) return prevState
@@ -86,10 +86,10 @@ function getPosition(state: GraphPopUpsState, graphRef: RefObject<HTMLDivElement
   let posX = state.position.x + OFFSET_NODE_POPUP
   let posY = state.position.y + OFFSET_NODE_POPUP
 
-  if (state.position.x + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.width) {
+  if (state.position.x + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_SIZE.width!) {
     posX = state.position.x - OFFSET_NODE_POPUP - BOARD_SIZE
   }
-  if (state.position.y + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_DRAWR_OPTIONS.height) {
+  if (state.position.y + OFFSET_NODE_POPUP + BOARD_SIZE > GRAPH_SIZE.height!) {
     if (state.showRemoveButton) {
       posY = state.position.y - OFFSET_NODE_POPUP - REMOVE_BUTTON_HEIGHT
     } else {
@@ -114,15 +114,15 @@ export default function GraphPopUps({ graphRef }: Props) {
     viewOnly: true
   }
 
-  function mouseHandler(fen: string, position: Position, mouseEvent: MouseEvents) {
-    if (mouseEvent === MouseEvents.MouseUp && !state.showRemoveButton) {
+  function mouseHandler(fen: string | null, position: Position | null, mouseEvent: MouseEvents) {
+    if (mouseEvent === MouseEvents.MouseUp && !state.showRemoveButton && fen) {
       dispatch({ type: "showButton", payload: { fen, position } })
       buttonDelayHandler.cancle()
     }
-    if (mouseEvent === MouseEvents.MouseMove && fen !== undefined) {
+    if (mouseEvent === MouseEvents.MouseMove && fen !== null) {
       dispatch({ type: "showBoard", payload: { fen, position } })
     }
-    if (mouseEvent === MouseEvents.MouseMove && fen === undefined) {
+    if ((mouseEvent === MouseEvents.MouseMove && fen === null) || mouseEvent === MouseEvents.Click) {
       dispatch({ type: "hideBoard", payload: {} })
       buttonDelayHandler.setTimer(DELAY_HIDE_REMOVE_BUTTON, dispatch, {
         type: "hideButton",
