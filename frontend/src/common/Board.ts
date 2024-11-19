@@ -73,4 +73,8 @@ export default class Board extends Observable {
   executeMove(orig: cg.Key, dest: cg.Key) {
     this.chessground.move(orig, dest)
   }
+
+  flipBoard() {
+    this.chessground.toggleOrientation()
+  }
 }

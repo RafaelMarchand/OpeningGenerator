@@ -38,6 +38,12 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     setOpenings("save", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
     mediator.generatorProxy.graphBuilder.saved = true
+    mediator.generatorProxy.resetGraph()
+    setSnackBar({
+      color: "success",
+      open: true,
+      message: "Opening saved to Library"
+    })
   }
 
   function handleRename() {
@@ -117,12 +123,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
           <>
             {state.openingIndex !== NO_OPENING_SELECTED ? (
               <>
-                <Button
-                  color="success"
-                  onClick={handleSaveChanges}
-                  sx={{ fontSize: "sm" }}
-                  fullWidth
-                  size="lg">
+                <Button color="success" onClick={handleSaveChanges} sx={{ fontSize: "sm" }} fullWidth size="lg">
                   Save Changes
                 </Button>
                 <Button color="neutral" onClick={handleReset} fullWidth size="lg">

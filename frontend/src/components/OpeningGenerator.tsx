@@ -21,18 +21,8 @@ export default function OpeningGenerator() {
   }, [])
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      spacing={2}
-      sx={{ pt: 2, height: "100vh", width: "100rem" }}>
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-        spacing={2}
-        sx={{ overflow: "auto", height: "100%", maxHeight: "100%" }}>
+    <Stack direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={2} sx={{ pt: 2, height: "100vh", width: "100rem" }}>
+      <Stack direction="column" justifyContent="flex-start" alignItems="center" spacing={2} sx={{ overflow: "auto", height: "100%", maxHeight: "100%" }}>
         <Stack direction="row" justifyContent="space-evenly" spacing={2} sx={{ width: "100%" }}>
           <Board boardRef={boardRef} />
           <Information />

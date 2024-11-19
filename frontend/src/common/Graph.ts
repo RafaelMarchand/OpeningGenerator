@@ -2,7 +2,6 @@ import { RefObject } from "react"
 import Graphology from "graphology"
 import Board from "./Board.js"
 import Observable from "./Observable.js"
-import { GraphType } from "./GraphBuilder.js"
 import GraphDrawer, { GraphMethods, Config } from "graph-drawer"
 import { State } from "./Proxy.js"
 import { blue, green, grey } from "@mui/material/colors"
@@ -68,19 +67,19 @@ export default class Graph extends Observable {
         }
         return "white"
       },
-      nodeClick: (key, position, event, draw) => {
+      nodeClick: (key, position, event) => {
         this.notify(Graph.NODE_CLICK, key, position, event)
         //draw()
       },
-      edgeClick(key, destNodeKey, event, draw) {
-        draw()
+      edgeClick(key, destNodeKey, event) {
+        //draw()
       },
-      nodeHover: (key, position, event, draw) => {
+      nodeHover: (key, position, event) => {
         this.notify(Graph.NODE_HOVER, key, position, event)
         //draw()
       },
-      edgeHover(key, destNodeKey, event, draw) {
-        draw()
+      edgeHover(key, destNodeKey, event) {
+        //draw()
       },
       styleCanvas: {
         borderRadius: "0.3rem"
@@ -92,6 +91,6 @@ export default class Graph extends Observable {
 
   draw(state: State, rootNodes: string[] = [Board.STARTING_POSITION]) {
     this.fen = state.fen
-    this.graphDrawer.forceDraw(state.graph, rootNodes)
+    this.graphDrawer.update(state.graph, rootNodes)
   }
 }

@@ -14,15 +14,7 @@ export type Options = {
   rangeOpponent: number[]
 }
 
-export type reducerAction =
-  | "color"
-  | "depth"
-  | "maxLineSpread"
-  | "lineSpreadAuto"
-  | "randomness"
-  | "rangeOpeningMoves"
-  | "rangeOpponent"
-  | "rareRepertoire"
+export type reducerAction = "color" | "depth" | "maxLineSpread" | "lineSpreadAuto" | "randomness" | "rangeOpeningMoves" | "rangeOpponent" | "rareRepertoire"
 
 export interface DispatchParams {
   type: reducerAction
@@ -117,12 +109,7 @@ export default function Configuration() {
           <Option value={5}>5</Option>
         </Select>
       </Box>
-      <RatingSlider
-        className="ratingOpp"
-        text="Rating"
-        dispatchOptions={dispatchOptions}
-        action={"rangeOpponent"}
-      />
+      <RatingSlider className="ratingOpp" text="Rating" dispatchOptions={dispatchOptions} action={"rangeOpponent"} />
       <Typography color="primary" level="title-lg">
         Repertoire
       </Typography>
@@ -138,17 +125,13 @@ export default function Configuration() {
           variant="outlined"
           onChange={(_event: SyntheticEvent | null, value: string | null) => {
             dispatchOptions({ type: "color", payload: value })
+            new Mediator().board?.flipBoard()
           }}>
           <Option value="w">white</Option>
           <Option value="b">black</Option>
         </Select>
       </Box>
-      <RatingSlider
-        className="ratingRep"
-        text="Rating"
-        dispatchOptions={dispatchOptions}
-        action={"rangeOpeningMoves"}
-      />
+      <RatingSlider className="ratingRep" text="Rating" dispatchOptions={dispatchOptions} action={"rangeOpeningMoves"} />
       <Stack className="rare" direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
         <Typography color="neutral" level="title-lg">
           Rare
@@ -161,12 +144,7 @@ export default function Configuration() {
           }}
         />
       </Stack>
-      <Stack
-        className="randomness"
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={0}>
+      <Stack className="randomness" direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
         <Typography color="neutral" level="title-lg">
           Randomness
         </Typography>
