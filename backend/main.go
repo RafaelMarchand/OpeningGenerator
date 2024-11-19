@@ -37,7 +37,7 @@ func main() {
 
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"message": "Hello, Render!",
+		"message": "Hello, Opening Generator",
 	})
 }
 
