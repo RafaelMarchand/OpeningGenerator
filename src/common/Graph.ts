@@ -92,6 +92,6 @@ export default class Graph extends Observable {
 
   draw(state: State, rootNodes: string[] = [Board.STARTING_POSITION]) {
     this.fen = state.fen
-    this.graphDrawer.update(state.graph, rootNodes)
+    this.graphDrawer.forceDraw(state.graph, rootNodes)
   }
 }

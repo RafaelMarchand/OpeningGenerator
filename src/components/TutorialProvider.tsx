@@ -7,10 +7,6 @@ const mediator = new Mediator()
 
 const steps = [
   {
-    selector: ".T1-createTab",
-    content: "Select this tab to create and modify openings"
-  },
-  {
     selector: ".T2-board",
     content: "Board shows the current position"
   },
