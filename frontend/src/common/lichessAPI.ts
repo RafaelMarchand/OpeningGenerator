@@ -60,4 +60,4 @@ export async function movesPlayers(position: string, range: number[], moveCount:
   return result
 }
 
-window.movesPlayers = movesPlayers
+//window.movesPlayers = movesPlayers

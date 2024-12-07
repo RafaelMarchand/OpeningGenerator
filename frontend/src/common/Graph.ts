@@ -4,7 +4,7 @@ import Board from "./Board.js"
 import Observable from "./Observable.js"
 import GraphDrawer, { GraphMethods, Config } from "graph-drawer"
 import { State } from "./Proxy.js"
-import { blue, green, grey } from "@mui/material/colors"
+import { blue, grey } from "@mui/material/colors"
 
 export const GRAPH_SIZE = {
   width: 1000,
@@ -40,13 +40,13 @@ export default class Graph extends Observable {
       maxArrangements: 50,
       paddingGraph: 30,
       nodeBorderColor: "white",
-      nodeColor: (key, attributes, clicked, mouseOver) => {
+      nodeColor: (key, _attributes, _clicked, _mouseOver) => {
         if (key === this.fen) {
           return blue[700]
         }
         return grey[700]
       },
-      nodeRadius: (key, _attributes, _clicked, mouseOver) => {
+      nodeRadius: (key, _attributes, _clicked, _mouseOver) => {
         if (key === this.fen) {
           return 10
         }
@@ -58,21 +58,21 @@ export default class Graph extends Observable {
         }
         return 2
       },
-      edgeColor(srcNodeKey, destNodeKey, srcAttribute, destNodeAttribute, clicked, mouseOver) {
+      edgeColor(_srcNodeKey, _destNodeKey, _srcAttribute, _destNodeAttribute, _clicked, _mouseOver) {
         return "white"
       },
       nodeClick: (key, position, event) => {
         this.notify(Graph.NODE_CLICK, key, position, event)
         //draw()
       },
-      edgeClick(key, destNodeKey, event) {
+      edgeClick(_key, _destNodeKey, _event) {
         //draw()
       },
       nodeHover: (key, position, event) => {
         this.notify(Graph.NODE_HOVER, key, position, event)
         //draw()
       },
-      edgeHover(key, destNodeKey, event) {
+      edgeHover(_key, _destNodeKey, _event) {
         //draw()
       },
       styleCanvas: {
