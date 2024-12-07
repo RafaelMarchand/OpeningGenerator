@@ -59,12 +59,6 @@ export default class Graph extends Observable {
         return 2
       },
       edgeColor(srcNodeKey, destNodeKey, srcAttribute, destNodeAttribute, clicked, mouseOver) {
-        if (srcNodeKey === "3" && clicked) {
-          return "violet"
-        }
-        if (mouseOver) {
-          return "orange"
-        }
         return "white"
       },
       nodeClick: (key, position, event) => {
