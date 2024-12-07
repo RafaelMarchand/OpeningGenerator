@@ -59,3 +59,5 @@ export async function movesPlayers(position: string, range: number[], moveCount:
     .catch((error) => console.log(error))
   return result
 }
+
+window.movesPlayers = movesPlayers
