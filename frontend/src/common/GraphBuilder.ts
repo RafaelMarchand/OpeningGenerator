@@ -78,4 +78,12 @@ export default class GraphBuilder {
     })
     return moves
   }
+
+  getPreviousPosition(fen: string) {
+    let previousPosition = undefined
+    this.graph.forEachInEdge(fen, (_edge, _attributes, source, _target) => {
+      previousPosition = source
+    })
+    return previousPosition
+  }
 }

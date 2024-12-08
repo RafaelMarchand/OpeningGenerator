@@ -17,14 +17,19 @@ export type State = {
 export default class Proxy extends Observable {
   static SHOW_POPUP = Symbol("showPopUp")
   static STATE_CHANGE = Symbol("stateChange")
+  static SELECT_MOVE = Symbol("selectMove")
   graphBuilder: GraphBuilder
   boardPosition: string
+  selectedMove: number
+  nextMoves: MoveData[]
   identifier: ProxyIdentifier
 
   constructor(identifier: ProxyIdentifier) {
     super()
     this.graphBuilder = new GraphBuilder()
     this.boardPosition = Board.STARTING_POSITION
+    this.selectedMove = 0
+    this.nextMoves = []
     this.identifier = identifier
   }
   // @ts-ignore
@@ -34,6 +39,40 @@ export default class Proxy extends Observable {
 
   nodeHover(fen: string | null, position: NodePosition | null, event: MouseEvent) {
     this.notify(Proxy.SHOW_POPUP, fen, position, event.type)
+  }
+
+  keyStroke(_event: "down" | "up", key: string) {
+    const RIGHT = "ArrowRight"
+    const LEFT = "ArrowLeft"
+    const DOWN = "ArrowDown"
+    const UP = "ArrowUp"
+    const ENTER = "Enter"
+
+    if (key === LEFT) {
+      const previousPosition = this.graphBuilder.getPreviousPosition(this.boardPosition)
+      if (previousPosition) {
+        this.boardPosition = previousPosition
+        this.updateUI()
+      }
+    }
+
+    if (key === DOWN) {
+      this.selectedMove = (this.selectedMove + 1) % this.nextMoves.length
+      this.notify(Proxy.SELECT_MOVE, this.selectedMove)
+    }
+    if (key === UP) {
+      this.selectedMove--
+      if (this.selectedMove < 0) {
+        this.selectedMove = this.nextMoves.length - 1
+      }
+      this.notify(Proxy.SELECT_MOVE, this.selectedMove)
+    }
+
+    if (key === ENTER || key === RIGHT) {
+      if (this.nextMoves.length > 0) {
+        this.playNextMove(this.nextMoves[this.selectedMove].fen)
+      }
+    }
   }
 
   resetGraph() {
@@ -55,10 +94,12 @@ export default class Proxy extends Observable {
 
   updateUI() {
     this.graphBuilder.graph.setAttribute("focus", this.boardPosition)
+    this.nextMoves = this.graphBuilder.getNextMoves(this.boardPosition)
+
     const state: State = {
       fen: this.boardPosition,
       graph: this.graphBuilder.graph,
-      nextMoves: this.graphBuilder.getNextMoves(this.boardPosition),
+      nextMoves: this.nextMoves,
       currentProxy: this.identifier
     }
     this.notify(Proxy.STATE_CHANGE, state)

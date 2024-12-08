@@ -40,6 +40,10 @@ export default class Board extends Observable {
     ])
   }
 
+  hideArrows() {
+    this.chessground.setShapes([])
+  }
+
   setPosition(position: string) {
     this.config!.fen = position
     this.chessground.set(this.config)
