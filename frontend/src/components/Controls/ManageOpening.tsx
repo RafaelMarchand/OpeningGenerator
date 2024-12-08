@@ -1,9 +1,10 @@
 import { Button, Input, Stack, Typography } from "@mui/joy"
-import { Dispatch, useContext } from "react"
+import { Dispatch, useContext, useEffect } from "react"
 import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import Mediator from "../../common/Mediator"
 import { ControllerState, DispatchController, NO_OPENING_SELECTED } from "./Controls"
 import { SnackBarContext } from "../SnackBarProvider"
+import LibraryProxy from "../../common/LibraryProxy"
 
 interface Props {
   state: ControllerState
@@ -16,6 +17,20 @@ const mediator = new Mediator()
 
 export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
   const setSnackBar = useContext(SnackBarContext)!
+
+  useEffect(() => {
+    mediator.libraryProxy.listen(LibraryProxy.NEW_MOVE_NOTIFICATION, () => {
+      setSnackBar({
+        color: "warning",
+        open: true,
+        message: "Can not add new moves in library, to do so edit this opening",
+        duration: 6000
+      })
+    })
+    return () => {
+      mediator.libraryProxy.remove(LibraryProxy.NEW_MOVE_NOTIFICATION)
+    }
+  }, [])
 
   function getOpeningData(): OpeningData {
     const opening = {

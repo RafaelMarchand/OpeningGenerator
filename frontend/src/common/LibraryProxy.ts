@@ -7,6 +7,7 @@ const IDENTIFIER = "Library"
 
 export default class LibraryProxy extends Proxy {
   static EDIT_OPENING = Symbol("editOpening")
+  static NEW_MOVE_NOTIFICATION = Symbol("newMoveNotification")
   constructor() {
     super(IDENTIFIER)
   }
@@ -21,6 +22,7 @@ export default class LibraryProxy extends Proxy {
     if (match) {
       this.boardPosition = moveData.fen
     } else {
+      this.notify(LibraryProxy.NEW_MOVE_NOTIFICATION)
       this.boardPosition = prevFen
     }
     this.updateUI()

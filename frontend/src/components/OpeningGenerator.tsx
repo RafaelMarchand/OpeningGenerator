@@ -16,9 +16,10 @@ export default function OpeningGenerator() {
   useEffect(() => {
     mediator.initialize(boardRef, graphRef)
     graphRef.current?.addEventListener("contextmenu", (e) => e.preventDefault())
-    openingGeneratorRef.current?.focus()
+    window.addEventListener("keydown", () => openingGeneratorRef.current?.focus())
     return () => {
       graphRef.current?.removeEventListener("contextmenu", (e) => e.preventDefault())
+      window.removeEventListener("keydown", () => openingGeneratorRef.current?.focus())
     }
   }, [])
 

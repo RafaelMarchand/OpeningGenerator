@@ -23,11 +23,16 @@ export default function NextMoves() {
       setMoves(nextMoves)
       setSelected(0)
     })
-    mediator.proxy.listen(Proxy.SELECT_MOVE, (newSelected: number) => {
-      setSelected(newSelected)
+    new Array<Proxy>(mediator.generatorProxy, mediator.libraryProxy).forEach((proxy) => {
+      proxy.listen(Proxy.SELECT_MOVE, (newSelected: number) => {
+        setSelected(newSelected)
+      })
     })
 
     return () => {
+      new Array<Proxy>(mediator.generatorProxy, mediator.libraryProxy).forEach((proxy) => {
+        proxy.remove(Proxy.SELECT_MOVE)
+      })
       mediator.remove(Mediator.STATE_CHANGE)
     }
   }, [])

@@ -9,6 +9,7 @@ type SnackBarState = {
   message: string
   color: any
   open: boolean
+  duration?: number
 }
 
 export const SnackBarContext = createContext<Dispatch<React.SetStateAction<SnackBarState>> | null>(null)
@@ -24,7 +25,8 @@ function SnackbarProvider({ children }: Props) {
     setSnackBar({
       message: "",
       color: "neutral",
-      open: false
+      open: false,
+      duration: undefined
     })
   }
 
@@ -34,7 +36,7 @@ function SnackbarProvider({ children }: Props) {
       <Snackbar
         color={snackBar.color}
         variant="solid"
-        autoHideDuration={3000}
+        autoHideDuration={snackBar.duration ?? 3000}
         open={snackBar.open}
         onClose={closeSnackBar}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}>

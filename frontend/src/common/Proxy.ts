@@ -60,6 +60,7 @@ export default class Proxy extends Observable {
       this.selectedMove = (this.selectedMove + 1) % this.nextMoves.length
       this.notify(Proxy.SELECT_MOVE, this.selectedMove)
     }
+
     if (key === UP) {
       this.selectedMove--
       if (this.selectedMove < 0) {

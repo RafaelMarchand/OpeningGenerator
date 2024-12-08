@@ -25,6 +25,9 @@ export default class Board extends Observable {
         move: (orig: cg.Key, dest: cg.Key) => {
           this.handleMove(orig + dest)
         }
+      },
+      highlight: {
+        lastMove: false
       }
     }
     this.chessground = Chessground(ref.current!, this.config)
