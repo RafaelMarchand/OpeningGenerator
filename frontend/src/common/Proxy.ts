@@ -4,6 +4,10 @@ import GraphBuilder, { GraphType, MoveData } from "./GraphBuilder"
 import Observable from "./Observable"
 import Graphology from "graphology"
 import { OpeningData } from "./useSaveOpening"
+import { Chess } from "chess.js"
+import { parse, ParseTree } from "@mliebelt/pgn-parser"
+
+type PgnMove = ParseTree["moves"][number]
 
 export type ProxyIdentifier = "Generator" | "Library"
 
@@ -95,7 +99,41 @@ export default class Proxy extends Observable {
     this.updateUI()
   }
 
-  importPGN(pgn: string) {}
+  importPGN(pgn: string) {
+    this.resetGraph()
+    const game = parse(pgn, { startRule: "pgn" }) as ParseTree
+    this.importLine(game.moves)
+    this.updateUI()
+  }
+
+  importLine(moves: PgnMove[]) {
+    moves.forEach((move) => {
+      const chess = new Chess()
+      chess.load(this.boardPosition)
+      const { san, from, to } = chess.move(move.notation.notation)
+      const resultingPosition = chess.fen()
+
+      this.graphBuilder.addMove(
+        {
+          move: {
+            uci: from + to,
+            san: san
+          },
+          fen: resultingPosition
+        },
+        this.boardPosition
+      )
+
+      const variationStartinPosition = this.boardPosition
+
+      move.variations.forEach((variation) => {
+        this.importLine(variation)
+        this.boardPosition = variationStartinPosition
+      })
+
+      this.boardPosition = resultingPosition
+    })
+  }
 
   updateUI() {
     this.graphBuilder.graph.setAttribute("focus", this.boardPosition)

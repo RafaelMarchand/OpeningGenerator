@@ -1,5 +1,5 @@
-import { Button, Input, Stack, Typography } from "@mui/joy"
-import { Dispatch, useContext, useEffect } from "react"
+import { Button, Input, Modal, ModalClose, Sheet, Stack, Textarea, Typography } from "@mui/joy"
+import { Dispatch, useContext, useEffect, useState } from "react"
 import { OpeningData, useOpeningsActions } from "../../common/useSaveOpening"
 import Mediator from "../../common/Mediator"
 import { ControllerState, DispatchController, NO_OPENING_SELECTED } from "./Controls"
@@ -16,6 +16,8 @@ interface Props {
 const mediator = new Mediator()
 
 export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
+  const [openModal, setOpenModal] = useState<boolean>(false)
+  const [pgn, setPgn] = useState<string>("")
   const setSnackBar = useContext(SnackBarContext)!
 
   useEffect(() => {
@@ -102,11 +104,9 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
   }
 
   function handlePGNImport() {
-    setSnackBar({
-      color: "primary",
-      open: true,
-      message: "Not supported yet"
-    })
+    setOpenModal(false)
+    setPgn("")
+    mediator.proxy.importPGN(pgn)
   }
 
   return (
@@ -161,7 +161,7 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
                 <Button onClick={handleReset} fullWidth>
                   Reset
                 </Button>
-                <Button sx={{ whiteSpace: "nowrap" }} onClick={handlePGNImport} fullWidth>
+                <Button sx={{ whiteSpace: "nowrap" }} onClick={() => setOpenModal(true)} fullWidth>
                   Import PGN
                 </Button>
               </>
@@ -169,6 +169,56 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
           </>
         )}
       </Stack>
+      <Modal
+        aria-labelledby="modal-title"
+        aria-describedby="modal-desc"
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Sheet
+          variant="soft"
+          color="neutral"
+          sx={{
+            borderRadius: "md",
+            p: 3,
+            boxShadow: "lg"
+          }}>
+          <ModalClose variant="plain" sx={{ m: 1 }} />
+          <Typography component="h2" id="modal-title" level="h4" textColor="inherit" fontWeight="lg" mb={1}>
+            Load PGN
+          </Typography>
+          {!mediator.proxy.graphBuilder.saved && (
+            <Typography sx={{ mb: 1 }} color="danger" level="title-lg">
+              Current graph is not saved and will be lost
+            </Typography>
+          )}
+          <Textarea
+            value={pgn}
+            color="primary"
+            variant="outlined"
+            minRows={10}
+            maxRows={10}
+            sx={{ width: "30rem" }}
+            onChange={(event) => setPgn(event.target.value)}
+            onKeyDown={(event) => {
+              event.stopPropagation()
+            }}
+          />
+          <Button color="primary" sx={{ mt: 2, mr: 2 }} size="lg" onClick={handlePGNImport}>
+            Load
+          </Button>
+          <Button
+            color="neutral"
+            sx={{ mt: 2, mr: 2 }}
+            onClick={() => {
+              setOpenModal(false)
+              setPgn("")
+            }}
+            size="lg">
+            Cancle
+          </Button>
+        </Sheet>
+      </Modal>
     </Stack>
   )
 }

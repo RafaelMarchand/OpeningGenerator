@@ -40,7 +40,12 @@ export default function NextMoves() {
   return (
     <Stack className="T5-nextMoves" sx={{ height: "100%" }} direction="column" justifyContent="center" alignItems="flex-start" spacing={2}>
       {moves.length > 0 && (
-        <Typography color="primary" level="title-lg">
+        <Typography
+          sx={{
+            whiteSpace: "nowrap"
+          }}
+          color="primary"
+          level="title-lg">
           Next Moves
         </Typography>
       )}
