@@ -68,18 +68,8 @@ export default function Controls() {
   const setSnackBar = useContext(SnackBarContext)!
 
   return (
-    <Stack
-      direction="column"
-      justifyContent="space-between"
-      alignItems="stretch"
-      spacing={2}
-      sx={{ width: "24%", height: "100%", pb: 2 }}>
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="stretch"
-        spacing={0}
-        sx={{ width: "100%", height: "80%" }}>
+    <Stack direction="column" justifyContent="space-between" alignItems="stretch" spacing={2} sx={{ width: "24%", height: "100%", pb: 2 }}>
+      <Stack direction="column" justifyContent="flex-start" alignItems="stretch" spacing={0} sx={{ width: "auto", height: "80%" }}>
         <ToggleButtonGroup
           size="lg"
           variant="solid"
@@ -102,20 +92,21 @@ export default function Controls() {
           <Button
             value="Generator"
             sx={{
+              width: "50%",
+              whiteSpace: "nowrap",
               borderBottomRightRadius: "0",
               borderBottomLeftRadius: "0",
               backgroundColor: state.currentView === "Generator" ? "#212121" : "",
               "&:hover": {
                 backgroundColor: ""
               }
-            }}
-            fullWidth>
+            }}>
             Create Opening
           </Button>
           <Button
             value="Library"
-            fullWidth
             sx={{
+              width: "50%",
               borderBottomRightRadius: "0",
               borderBottomLeftRadius: "0",
               backgroundColor: state.currentView !== "Generator" ? "#212121" : "",
@@ -126,11 +117,7 @@ export default function Controls() {
             Library
           </Button>
         </ToggleButtonGroup>
-        {state.currentView === "Generator" ? (
-          <Configuration />
-        ) : (
-          <Openings dispatch={dispatch} openings={openings} setOpenings={setOpenings} />
-        )}
+        {state.currentView === "Generator" ? <Configuration /> : <Openings dispatch={dispatch} openings={openings} setOpenings={setOpenings} />}
       </Stack>
       <ManageOpening state={state} dispatch={dispatch} openings={openings} setOpenings={setOpenings} />
     </Stack>

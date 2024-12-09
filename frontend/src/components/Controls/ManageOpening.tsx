@@ -52,8 +52,8 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     }
     setOpenings("save", getOpeningData())
     dispatch({ type: "setInputName", payload: "" })
-    mediator.generatorProxy.graphBuilder.saved = true
-    mediator.generatorProxy.resetGraph()
+    mediator.proxy.graphBuilder.saved = true
+    mediator.proxy.resetGraph()
     setSnackBar({
       color: "success",
       open: true,
@@ -93,7 +93,15 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
     })
   }
 
-  function handleExport() {
+  function handlePGNExport() {
+    setSnackBar({
+      color: "primary",
+      open: true,
+      message: "Not supported yet"
+    })
+  }
+
+  function handlePGNImport() {
     setSnackBar({
       color: "primary",
       open: true,
@@ -127,10 +135,10 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
       <Stack direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={1}>
         {state.currentView === "Library" ? (
           <>
-            <Button onClick={handleRename} fullWidth size="lg">
+            <Button onClick={handleRename} fullWidth>
               Rename
             </Button>
-            <Button onClick={handleExport} fullWidth size="lg">
+            <Button onClick={handlePGNExport} fullWidth>
               Export PNG
             </Button>
           </>
@@ -138,20 +146,23 @@ export default function ManageOpening({ state, dispatch, setOpenings }: Props) {
           <>
             {state.openingIndex !== NO_OPENING_SELECTED ? (
               <>
-                <Button color="success" onClick={handleSaveChanges} sx={{ fontSize: "sm" }} fullWidth size="lg">
+                <Button color="success" onClick={handleSaveChanges} sx={{ fontSize: "sm" }} fullWidth>
                   Save Changes
                 </Button>
-                <Button color="neutral" onClick={handleReset} fullWidth size="lg">
+                <Button color="neutral" onClick={handleReset} fullWidth>
                   Cancle
                 </Button>
               </>
             ) : (
               <>
-                <Button onClick={handleSave} fullWidth size="lg">
+                <Button onClick={handleSave} fullWidth>
                   Save
                 </Button>
-                <Button onClick={handleReset} fullWidth size="lg">
+                <Button onClick={handleReset} fullWidth>
                   Reset
+                </Button>
+                <Button sx={{ whiteSpace: "nowrap" }} onClick={handlePGNImport} fullWidth>
+                  Import PGN
                 </Button>
               </>
             )}

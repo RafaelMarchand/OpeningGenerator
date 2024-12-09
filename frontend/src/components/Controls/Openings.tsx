@@ -107,11 +107,7 @@ export default function Openings({ dispatch, openings, setOpenings }: Props) {
           <Button color="neutral" sx={{ mt: 2, mr: 2, width: "25%" }} size="lg" onClick={handleContinue}>
             Continue
           </Button>
-          <Button
-            color="neutral"
-            sx={{ mt: 2, mr: 2, width: "25%" }}
-            onClick={() => setOpenModal(false)}
-            size="lg">
+          <Button color="neutral" sx={{ mt: 2, mr: 2, width: "25%" }} onClick={() => setOpenModal(false)} size="lg">
             Cancle
           </Button>
         </Sheet>

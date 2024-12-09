@@ -14,6 +14,14 @@ export type State = {
   currentProxy: ProxyIdentifier
 }
 
+export const NAVIGATION_KEYS = {
+  right: "ArrowRight",
+  left: "ArrowLeft",
+  down: "ArrowDown",
+  up: "ArrowUp",
+  enter: "Enter"
+}
+
 export default class Proxy extends Observable {
   static SHOW_POPUP = Symbol("showPopUp")
   static STATE_CHANGE = Symbol("stateChange")
@@ -42,13 +50,7 @@ export default class Proxy extends Observable {
   }
 
   keyStroke(_event: "down" | "up", key: string) {
-    const RIGHT = "ArrowRight"
-    const LEFT = "ArrowLeft"
-    const DOWN = "ArrowDown"
-    const UP = "ArrowUp"
-    const ENTER = "Enter"
-
-    if (key === LEFT) {
+    if (key === NAVIGATION_KEYS.left) {
       const previousPosition = this.graphBuilder.getPreviousPosition(this.boardPosition)
       if (previousPosition) {
         this.boardPosition = previousPosition
@@ -56,12 +58,12 @@ export default class Proxy extends Observable {
       }
     }
 
-    if (key === DOWN) {
+    if (key === NAVIGATION_KEYS.down) {
       this.selectedMove = (this.selectedMove + 1) % this.nextMoves.length
       this.notify(Proxy.SELECT_MOVE, this.selectedMove)
     }
 
-    if (key === UP) {
+    if (key === NAVIGATION_KEYS.up) {
       this.selectedMove--
       if (this.selectedMove < 0) {
         this.selectedMove = this.nextMoves.length - 1
@@ -69,7 +71,7 @@ export default class Proxy extends Observable {
       this.notify(Proxy.SELECT_MOVE, this.selectedMove)
     }
 
-    if (key === ENTER || key === RIGHT) {
+    if (key === NAVIGATION_KEYS.enter || key === NAVIGATION_KEYS.right) {
       if (this.nextMoves.length > 0) {
         this.playNextMove(this.nextMoves[this.selectedMove].fen)
       }
@@ -92,6 +94,8 @@ export default class Proxy extends Observable {
     this.boardPosition = Board.STARTING_POSITION
     this.updateUI()
   }
+
+  importPGN(pgn: string) {}
 
   updateUI() {
     this.graphBuilder.graph.setAttribute("focus", this.boardPosition)
